@@ -1,0 +1,74 @@
+.noDrag {
+  -webkit-app-region: no-drag;
+}
+
+.canDrag {
+  -webkit-app-region: drag;
+}
+.wrap {
+  display: flex;
+  height: 36px;
+  -webkit-app-region: drag;
+  padding-left: 10px;
+  position: absolute;
+  z-index: 999;
+  left: 0;
+  right: 0;
+  background-color: #006060;
+}
+
+.loginWrap:extend(.wrap) {
+  background-color: #fff;
+}
+
+.closeBtn {
+  height: 30px;
+  width: 40px;
+  text-align: center;
+  line-height: 40px;
+  justify-content: flex-end;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.minBtn {
+  height: 30px;
+  width: 40px;
+  text-align: center;
+  line-height: 40px;
+  justify-content: flex-end;
+  margin-left: auto;
+  cursor: pointer;
+  color: #ffb239;
+}
+
+.maxBtn {
+  height: 30px;
+  width: 40px;
+  text-align: center;
+  line-height: 40px;
+  justify-content: flex-end;
+  margin-left: auto;
+  cursor: pointer;
+  color: #06c045;
+}
+
+.closeBtn:hover {
+  color: red;
+}
+
+.closeBtnCircle {
+  height: 30px;
+  width: 40px;
+  text-align: center;
+  line-height: 40px;
+  justify-content: flex-end;
+  margin-left: auto;
+  cursor: pointer;
+  color: red;
+}
+
+.innerWrap {
+  width: 80px;
+  display: flex;
+}
