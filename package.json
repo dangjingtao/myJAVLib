@@ -1,0 +1,37 @@
+{
+  "name": "eletron_app",
+  "scripts": {
+    "start": "electron .",
+    "dev-electron": "cross-env NODE_ENV=development electron server/main.ts",
+    "dev-client": "cd client && cross-env yarn dev",
+    "electron-start": "yarn build && cross-env NODE_ENV=production electron server/main.js",
+    "ci": "start-server-and-test dev-client http://localhost:8080 dev-electron"
+  },
+  "version": "1.0.0",
+  "main": "./server/main.ts",
+  "author": "djtao",
+  "license": "MIT",
+  "devDependencies": {
+    "@electron-forge/cli": "^6.4.1",
+    "concurrently": "^8.2.1",
+    "cross-env": "^7.0.3",
+    "electron": "^26.1.0",
+    "eletron": "^0.0.1-security",
+    "start-server-and-test": "^2.0.0",
+    "wait-on": "^7.0.1"
+  },
+  "dependencies": {
+    "chalk": "4.1.2",
+    "crawler": "^1.4.0",
+    "csv-parser": "^3.0.0",
+    "dayjs": "^1.11.9",
+    "express": "^4.18.2",
+    "neat-csv": "^7.0.0",
+    "puppeteer": "^21.1.1",
+    "sequelize": "^6.32.1",
+    "socket.io": "^4.7.2",
+    "sqlite3": "^5.1.6",
+    "winston": "^3.10.0",
+    "xml2js": "^0.6.2"
+  }
+}
