@@ -59,10 +59,7 @@ const createWindow = async () => {
 app.on("activate", () => {
   // 在 macOS 系统内, 如果没有已开启的应用窗口
   // 点击托盘图标时通常会重新创建一个新窗口
-  if (BrowserWindow.getAllWindows().length === 0)
-    createWindow({
-      loginState: false,
-    });
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
 const io = createSocket({ port: "9000" });
@@ -97,6 +94,10 @@ app.whenReady().then(async function () {
 // 直到用户使用 Cmd + Q 明确退出
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
+});
+
+app.on("will-quit", () => {
+  localStorage.setItem("login", "false");
 });
 
 // 在当前文件中你可以引入所有的主进程代码

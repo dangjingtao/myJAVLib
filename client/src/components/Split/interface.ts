@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { ReactNode } from "react";
 
 export interface SplitProps {
   /**
@@ -12,11 +13,11 @@ export interface SplitProps {
   /**
    * 表示split的数量或主次
    */
-  primary?: 'first' | 'second';
+  primary?: "first" | "second";
   /**
    * split的方向
    */
-  split?: 'vertical' | 'horizontal';
+  split?: "vertical" | "horizontal";
   /**
    * pane的样式
    */

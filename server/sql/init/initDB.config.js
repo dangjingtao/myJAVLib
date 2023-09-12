@@ -44,7 +44,7 @@ const getTagsInit = () => {
 const getDB = async (tables = []) => {
   const initTags = busTag;
   const TABLE_CFG = {
-    dataBaseName: "javlib.db",
+    dataBaseName: "myjavlib.db",
     tables: [
       {
         tableName: "user",
@@ -85,17 +85,22 @@ const getDB = async (tables = []) => {
         tableName: "actor",
         columns: [
           {
-            name: "apiKey",
+            name: "name_CN",
             dataType: "STRING",
           },
-          { name: "active", dataType: "BOOLEAN" },
+          {
+            name: "name_JP",
+            dataType: "STRING",
+          },
+          {
+            name: "name_EN",
+            dataType: "STRING",
+          },
+          { name: "rate", dataType: "NUMBER" },
+          { name: "info", dataType: "STRING" },
+          { name: "avatar", dataType: "STRING" },
         ],
-        initData: [
-          // {
-          //   apiKey: CHATGPT_APIKey,
-          //   active: 1,
-          // },
-        ],
+        initData: [],
         clear: false,
       },
       {
@@ -109,11 +114,79 @@ const getDB = async (tables = []) => {
           { name: "cn", dataType: "STRING" },
           { name: "classType", dataType: "STRING" },
           { name: "class", dataType: "STRING" },
+          { name: "store", dataType: "JSON" },
+          { name: "tmp_store", dataType: "JSON" },
+          { name: "class", dataType: "STRING" },
+          { name: "no_active", dataType: "BOOLEAN" },
+          { name: "color", dataType: "STRING" },
+          { name: "extend", dataType: "STRING" },
           { name: "note", dataType: "STRING" },
         ],
         initData: initTags,
         clear: true,
       },
+      {
+        tableName: "series",
+        columns: [
+          { name: "code", dataType: "STRING" },
+          { name: "name", dataType: "STRING" },
+          { name: "desc", dataType: "STRING" },
+          { name: "store", dataType: "STRING" },
+          { name: "tmp_store", dataType: "STRING" },
+          { name: "note", dataType: "STRING" },
+          { name: "info", dataType: "JSON" },
+          { name: "expand", dataType: "STRING" },
+        ],
+        initData: [{ name: "痴女系列", code: "cn" }],
+        clear: true,
+      },
+      {
+        tableName: "director",
+        columns: [
+          { name: "code", dataType: "STRING" },
+          { name: "name", dataType: "STRING" },
+          { name: "desc", dataType: "STRING" },
+          { name: "store", dataType: "STRING" },
+          { name: "tmp_store", dataType: "STRING" },
+          { name: "note", dataType: "STRING" },
+          { name: "info", dataType: "JSON" },
+          { name: "expand", dataType: "STRING" },
+        ],
+        initData: [{ code: "dndt", name: "东尼大桃" }],
+        clear: true,
+      },
+      {
+        tableName: "studio",
+        columns: [
+          { name: "code", dataType: "STRING" },
+          { name: "name", dataType: "STRING" },
+          { name: "desc", dataType: "STRING" },
+          { name: "store", dataType: "STRING" },
+          { name: "tmp_store", dataType: "STRING" },
+          { name: "note", dataType: "STRING" },
+          { name: "info", dataType: "JSON" },
+          { name: "expand", dataType: "STRING" },
+        ],
+        initData: [{ code: "dk", name: "fitch" }],
+        clear: true,
+      },
+      {
+        tableName: "label",
+        columns: [
+          { name: "code", dataType: "STRING" },
+          { name: "name", dataType: "STRING" },
+          { name: "desc", dataType: "STRING" },
+          { name: "store", dataType: "STRING" },
+          { name: "tmp_store", dataType: "STRING" },
+          { name: "note", dataType: "STRING" },
+          { name: "info", dataType: "JSON" },
+          { name: "expand", dataType: "STRING" },
+        ],
+        initData: [{ code: "dk", name: "fitch" }],
+        clear: true,
+      },
+      // config
+      // tmp_list
     ],
   };
 

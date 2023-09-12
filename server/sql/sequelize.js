@@ -10,18 +10,31 @@ const initTables = (sequelize, tables) => {
 
     const structrue = {};
     columns.forEach((column) => {
-      const { name, dataType } = column;
-      structrue[name] = Sequelize[dataType];
+      const { name, dataType, ...rest } = column;
+      const re = /(?<=\[)(.+?)(?=\])/g;
+      if (re.test(dataType)) {
+        const match = dataType.match(re)[0];
+        const top = dataType.replace(`[${match}]`, "");
+        structrue[name] = {
+          type: Sequelize[top](Sequelize[match]),
+          ...rest,
+        };
+      } else {
+        structrue[name] = {
+          type: Sequelize[dataType],
+          ...rest,
+        };
+      }
     });
 
     sequelize.define(tableName, structrue);
     const curTable = sequelize.models[tableName];
-    if (clear) {
-      await curTable.destroy({ where: {} });
-    }
+    // if (clear) {
+    //   await curTable.destroy({ where: {} });
+    // }
     // 插入标准调试数据;
     sequelize
-      .sync()
+      .sync({ force: clear })
       .then(() => curTable.bulkCreate(initData))
       .then((jane) => {
         // console.log(jane.toJSON());

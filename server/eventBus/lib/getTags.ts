@@ -8,8 +8,6 @@ module.exports = async function (e, params = {}) {
     raw: true,
     where: {
       ...params,
-      // username,
-      // password,
     },
   });
   return response.success(result);
