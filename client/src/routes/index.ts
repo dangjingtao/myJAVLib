@@ -6,6 +6,7 @@ import {
   IconHistogram,
   IconUserSetting,
   IconBookmark,
+  IconUserGroup,
   IconLive,
   IconSetting,
   IconGridSquare,
@@ -54,6 +55,12 @@ export const routerConfigs: routerConfig[] = [
             name: "采集",
             icon: IconDownload,
             elePath: "@/pages/Gather",
+          },
+          {
+            path: "/dataSet/actress",
+            name: "艺术家",
+            elePath: "@/pages/Actress",
+            icon: IconUserGroup,
           },
           {
             path: "/dataSet/tags",

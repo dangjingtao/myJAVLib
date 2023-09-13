@@ -33,7 +33,8 @@ const renderContent = (text: string) => {
   );
 };
 
-function App({ title, tableName, columns }) {
+function App({ title, tableName, columns, EditModal: CustEditModal }) {
+  const EditDetailModal = CustEditModal || EditModal;
   const [dataSource, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [scrollProp, setScrollProp] = useState<{
@@ -154,7 +155,7 @@ function App({ title, tableName, columns }) {
         onRow={handleRow}
         resizable
       />
-      <EditModal
+      <EditDetailModal
         currentRow={currenRow}
         visible={editVisible}
         handleOk={async (params: Row) => {
