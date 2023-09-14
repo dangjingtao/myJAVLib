@@ -52,11 +52,14 @@ const getDB = async (tables = []) => {
     x.name_CN = name_CN;
     x.name_EN = name_EN;
     x.name = name_JP;
-    x.tags = JSON.stringify(x.tags);
-    x.images = JSON.stringify(x.images);
+    x.tags = x.tags;
+    x.images = x.images;
+    x.cover = x.photo;
+    x.isRetired = false;
     delete x.id;
     delete x.factory;
     delete x.other_images;
+    delete x.photo;
   });
 
   // console.log(airAvActress[0]);
@@ -104,6 +107,7 @@ const getDB = async (tables = []) => {
         columns: [
           { name: "airav_id", dataType: "STRING" },
           { name: "name", dataType: "STRING" },
+          { name: "debut", dataType: "STRING" }, // 出道日期
           { name: "avatar", dataType: "STRING" },
           { name: "cover", dataType: "STRING" },
           { name: "description", dataType: "STRING" },
@@ -116,6 +120,7 @@ const getDB = async (tables = []) => {
           { name: "hip", dataType: "STRING" }, //臀围
           { name: "birth_place", dataType: "STRING" }, //出身地
           { name: "images", dataType: "JSON" }, //图集
+          { name: "tags", dataType: "JSON" }, // 标签集
           { name: "airav_tags", dataType: "JSON" }, //
           {
             name: "name_CN",
@@ -135,6 +140,9 @@ const getDB = async (tables = []) => {
           { name: "tmp_store", dataType: "JSON" },
           { name: "info", dataType: "STRING" },
           { name: "busCode", dataType: "STRING" },
+          { name: "note", dataType: "STRING" },
+          { name: "isRetired", dataType: "BOOLEAN" },
+          { name: "debut", dataType: "STRING" },
         ],
         initData: airAvActress,
         clear: true,

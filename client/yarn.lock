@@ -1459,6 +1459,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-tagcloud@^1.1.8":
+  version "1.1.8"
+  resolved "https://registry.npmmirror.com/@types/react-tagcloud/-/react-tagcloud-1.1.8.tgz"
+  integrity sha512-7fkrOCDiEitW4kclvpzslG0AIpYK9s5XlATUS5vMhmhXlS4qFxH4gWaV+vD4yzHwdEEsfUg6rByVH1tSfyS4HQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*", "@types/react@^18.2.15":
   version "18.2.21"
   resolved "https://registry.npmmirror.com/@types/react/-/react-18.2.21.tgz"
@@ -1489,6 +1496,11 @@
   version "4.2.0"
   resolved "https://registry.npmmirror.com/@types/stylis/-/stylis-4.2.0.tgz"
   integrity sha512-n4sx2bqL0mW1tvDf/loQ+aMX7GQD3lc3fkCMC55VFNDu/vBOabO+LTIeXKM14xK0ppk5TUGcWRjiSpIlUpghKw==
+
+"@types/wordcloud@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npmmirror.com/@types/wordcloud/-/wordcloud-1.2.0.tgz"
+  integrity sha512-s6wZ7eIi+CBSdsjZwp0yVmL8G8+Eo1vumv/NVUjRtClGtxx+o1S74+PbYZmqp7hAIvRcOazdviQ6qeijxuXfKw==
 
 "@typescript-eslint/eslint-plugin@^6.0.0":
   version "6.5.0"
@@ -2281,6 +2293,19 @@ dom-walk@^0.1.0:
   version "0.1.2"
   resolved "https://registry.npmmirror.com/dom-walk/-/dom-walk-0.1.2.tgz"
   integrity sha512-6QvTW9mrGeIegrFXdtQi9pk7O/nSK6lSdXW2eqUspN5LWD7UTji2Fqw5V2YLjBpHEoU9Xl/eUWNpDeZvoyOv2w==
+
+echarts-wordcloud@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmmirror.com/echarts-wordcloud/-/echarts-wordcloud-2.1.0.tgz"
+  integrity sha512-Kt1JmbcROgb+3IMI48KZECK2AP5lG6bSsOEs+AsuwaWJxQom31RTNd6NFYI01E/YaI1PFZeueaupjlmzSQasjQ==
+
+echarts@^5.0.1, echarts@^5.4.3:
+  version "5.4.3"
+  resolved "https://registry.npmmirror.com/echarts/-/echarts-5.4.3.tgz"
+  integrity sha512-mYKxLxhzy6zyTi/FaEbJMOZU1ULGEQHaeIeuMR5L+JnJTpz+YR03mnnpBhbR4+UYJAgiXgpyTVLffPAjOTLkZA==
+  dependencies:
+    tslib "2.3.0"
+    zrender "5.4.4"
 
 electron-to-chromium@^1.4.477:
   version "1.4.508"
@@ -3494,6 +3519,11 @@ randombytes@^2.1.0:
   dependencies:
     safe-buffer "^5.1.0"
 
+randomcolor@^0.6.2:
+  version "0.6.2"
+  resolved "https://registry.npmmirror.com/randomcolor/-/randomcolor-0.6.2.tgz"
+  integrity sha512-Mn6TbyYpFgwFuQ8KJKqf3bqqY9O1y37/0jgSK/61PUxV4QfIMv0+K2ioq8DfOjkBslcjwSzRfIDEXfzA9aCx7A==
+
 react-color@^2.19.3:
   version "2.19.3"
   resolved "https://registry.npmmirror.com/react-color/-/react-color-2.19.3.tgz"
@@ -3591,6 +3621,16 @@ react-split-pane@^2.0.3:
     react "^16.2.0"
     react-dom "^16.2.0"
     styled-components "^2.4.0"
+
+react-tagcloud@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.npmmirror.com/react-tagcloud/-/react-tagcloud-2.3.1.tgz"
+  integrity sha512-vWnPzx1bmR2ya7WEeqCbZGO8q/x0agOjxnXQGD9jg5OAyLqaKWAfArKypaoUVXYDyjABcZg5BDu8qLC9JRGDbg==
+  dependencies:
+    prop-types "^15.6.2"
+    randomcolor "^0.6.2"
+    seedrandom "^3.0.5"
+    shuffle-array "^1.0.1"
 
 react-window@^1.8.2:
   version "1.8.9"
@@ -3800,6 +3840,11 @@ scule@^1.0.0:
   resolved "https://registry.npmmirror.com/scule/-/scule-1.0.0.tgz"
   integrity sha512-4AsO/FrViE/iDNEPaAQlb77tf0csuq27EsVpy6ett584EcRTp6pTDLoGWVxCD77y5iU5FauOvhsI4o1APwPoSQ==
 
+seedrandom@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.npmmirror.com/seedrandom/-/seedrandom-3.0.5.tgz"
+  integrity sha512-8OwmbklUNzwezjGInmZ+2clQmExQPvomqjL7LFqOYqtmuxRgQYqOD3mHaU+MvZn5FLUeVxVfQjwLZW/n/JFuqg==
+
 semver@^5.6.0:
   version "5.7.2"
   resolved "https://registry.npmmirror.com/semver/-/semver-5.7.2.tgz"
@@ -3850,6 +3895,11 @@ shell-quote@^1.8.1:
   version "1.8.1"
   resolved "https://registry.npmmirror.com/shell-quote/-/shell-quote-1.8.1.tgz"
   integrity sha512-6j1W9l1iAs/4xYBI1SYOVZyFcCis9b4KCLQ8fgAGG07QvzaRLVVRQvAy85yNmmZSjYjg4MWh4gNvlPujU/5LpA==
+
+shuffle-array@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmmirror.com/shuffle-array/-/shuffle-array-1.0.1.tgz"
+  integrity sha512-0TFRU8zVQaLatWKr0/czo19VyPNgb/a3sBc1GAjVfivfzEGaS54vueNgtAu/8/pW7EM/VF5fwq9zgpLdGyRmVw==
 
 slash@^2.0.0:
   version "2.0.0"
@@ -4112,6 +4162,11 @@ tslib@^2.0.0, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.5.0:
   resolved "https://registry.npmmirror.com/tslib/-/tslib-2.6.2.tgz"
   integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
 
+tslib@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.npmmirror.com/tslib/-/tslib-2.3.0.tgz"
+  integrity sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==
+
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
   resolved "https://registry.npmmirror.com/type-check/-/type-check-0.4.0.tgz"
@@ -4354,6 +4409,11 @@ which@^2.0.1:
   dependencies:
     isexe "^2.0.0"
 
+wordcloud@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.npmmirror.com/wordcloud/-/wordcloud-1.2.2.tgz"
+  integrity sha512-fUnDsGrHXou+49j1OeKaC7nOeZPx+sWjIet0L/j6eAcm0nXy+a+AuUs/iDAX4PLBg1Zc6wgXWXhoXdQsXRWAEw==
+
 wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.npmmirror.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz"
@@ -4415,3 +4475,10 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npmmirror.com/yocto-queue/-/yocto-queue-0.1.0.tgz"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zrender@5.4.4:
+  version "5.4.4"
+  resolved "https://registry.npmmirror.com/zrender/-/zrender-5.4.4.tgz"
+  integrity sha512-0VxCNJ7AGOMCWeHVyTrGzUgrK4asT4ml9PEkeGirAkKNYXYzoPJCLvmyfdoOXcjTHPs10OZVMfD1Rwg16AZyYw==
+  dependencies:
+    tslib "2.3.0"

@@ -16,6 +16,9 @@ import type { Row } from "./types";
 const { Text } = Typography;
 
 const renderContent = (text: string) => {
+  if (text === "" || text === null) {
+    return <div style={{ textAlign: "center" }}>--</div>;
+  }
   return (
     <Tooltip position="right" content={text}>
       <div
