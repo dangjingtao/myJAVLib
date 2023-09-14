@@ -1,27 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Table,
-  Avatar,
-  Button,
   Empty,
   Typography,
   Tooltip,
   InputGroup,
   Input,
-  InputNumber,
-  AutoComplete,
-  DatePicker,
-  Modal,
+  Notification,
   Select,
-  Descriptions,
+  Space,
 } from "@douyinfe/semi-ui";
-import { IconDelete, IconSearch } from "@douyinfe/semi-icons";
-import {
-  IllustrationNoResult,
-  IllustrationNoResultDark,
-} from "@douyinfe/semi-illustrations";
+import { IconSearch } from "@douyinfe/semi-icons";
+import { IllustrationNoResult } from "@douyinfe/semi-illustrations";
+// import { SketchPicker, MaterialPicker } from "react-color";
+
+import EditModal from "./ components/EditModal";
+
+import type { Row } from "./types";
+import { dict, subClass } from "./constants";
+
 const { Text } = Typography;
 
-const renderContent = (text, record, index) => {
+const renderContent = (text: string) => {
   return (
     <Tooltip position="right" content={text}>
       <div
@@ -38,186 +38,172 @@ const renderContent = (text, record, index) => {
     </Tooltip>
   );
 };
-const dict = {
-  censored: "有码",
-  uncensored: "无码",
-};
-const showModal = ({ title = "详情", content = {} }) => {
-  const data = [
-    { key: "识别码", value: content.code },
-    { key: "日文", value: content.jp },
-    { key: "中文", value: content.zh_tw },
-    { key: "英文", value: content.en },
-    { key: "所属大类", value: dict[content.classType] },
-    { key: "类别", value: content.class },
-    { key: "标记", value: <textarea value={content.note}></textarea> },
-  ];
-
-  Modal.info({
-    title,
-    content: (
-      <>
-        <Descriptions data={data} />
-      </>
-    ),
-    style: { width: 800, height: 600 },
-    zIndex: 96,
-    centered: true,
-  });
-};
-
-const columns = [
-  {
-    title: "中文",
-    dataIndex: "zh_tw",
-    width: 180,
-    resize: true,
-    sorter: (a, b) => (a.zh_tw.length - b.zh_tw.length > 0 ? 1 : -1),
-    // fixed: true,
-    // ellipsis: true,
-    render: renderContent,
-    // onFilter: (value, record) => record.name.includes(value),
-  },
-  {
-    title: "类别",
-    dataIndex: "classType",
-    width: 100,
-    filters: [
-      {
-        text: "有码",
-        value: "Semi Design 设计稿",
-      },
-      {
-        text: "无码",
-        value: "Semi D2C 设计稿",
-      },
-    ],
-    // sorter: (a, b) => (a.size - b.size > 0 ? 1 : -1),
-    render: (text) => {
-      const dict = {
-        censored: "有码",
-        uncensored: "无码",
-      };
-      return dict[text];
-    },
-  },
-
-  {
-    title: "二级分类",
-    dataIndex: "class",
-    width: 120,
-    filters: [
-      {
-        text: "有码",
-        value: "Semi Design 设计稿",
-      },
-      {
-        text: "无码",
-        value: "Semi D2C 设计稿",
-      },
-    ],
-  },
-  {
-    title: "已入库",
-    dataIndex: "movies",
-    width: 100,
-    sorter: (a, b) => (a.zh_tw.length - b.zh_tw.length > 0 ? 1 : -1),
-    render: renderContent,
-  },
-  {
-    title: "日文",
-    dataIndex: "jp",
-    width: 100,
-    render: renderContent,
-  },
-  {
-    title: "英文",
-    dataIndex: "en",
-    width: 100,
-    render: renderContent,
-  },
-
-  {
-    title: "备注",
-    dataIndex: "note",
-    render: renderContent,
-    // sorter: (a, b) => (a.updateTime - b.updateTime > 0 ? 1 : -1),
-    // render: (value) => {
-    //   return dateFns.format(new Date(value), "yyyy-MM-dd");
-    // },
-  },
-  {
-    title: "操作",
-    dataIndex: "operate",
-    width: 200,
-    render: (text, content) => {
-      return (
-        <Text
-          style={{ cursor: "pointer", color: "var(--semi-color-link-visited)" }}
-          link=""
-          onClick={() => showModal({ content })}
-        >
-          详情
-        </Text>
-      );
-    },
-    // sorter: (a, b) => (a.updateTime - b.updateTime > 0 ? 1 : -1),
-    // render: (value) => {
-    //   return dateFns.format(new Date(value), "yyyy-MM-dd");
-    // },
-  },
-];
 
 function App() {
   const [dataSource, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [scrollProp, setScrollProp] = useState<{
+    y: number | string;
+    x: string | number;
+  }>({ y: 600, x: "100%" });
 
-  const [scrollProp, setScrollProp] = useState({ y: 600, x: "100%" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [dimension, setDimension] = useState<any>("");
+  const [searchWord, setSearchWord] = useState("");
+  const [editVisible, setEditVisible] = useState(false);
+  const [currenRow, setCurrentRow] = useState<Row | null>(null);
+
+  const columns = [
+    {
+      title: "中文",
+      dataIndex: "zh_tw",
+      width: 180,
+      resize: true,
+      sorter: (a: { zh_tw: string | any[] }, b: { zh_tw: string | any[] }) =>
+        a.zh_tw.length - b.zh_tw.length > 0 ? 1 : -1,
+      fixed: true,
+      render: renderContent,
+    },
+    {
+      title: "情感色",
+      dataIndex: "color",
+      width: 80,
+      render: (color: string) => {
+        return (
+          <div
+            style={{
+              background: color || "#fff",
+              border: "1px solid var(--semi-color-border)",
+            }}
+          >
+            &nbsp;
+          </div>
+        );
+      },
+    },
+    {
+      title: "激活",
+      dataIndex: "no_active",
+      width: 70,
+      filters: [
+        { text: "是", value: 1 },
+        { text: "否", value: 0 },
+      ],
+      onFilter: (value: number, record: Row) => {
+        return Number(record.no_active) !== value;
+      },
+      render: (text: number) => {
+        return !text ? "是" : "否";
+      },
+    },
+    {
+      title: "类别",
+      dataIndex: "classType",
+      width: 80,
+      filters: Object.entries(dict).map((x) => ({ text: x[1], value: x[0] })),
+      onFilter: (value: string, record: Row) => record.classType === value,
+      render: (text: string) => {
+        return dict[text];
+      },
+    },
+
+    {
+      title: "二级分类",
+      dataIndex: "class",
+      width: 100,
+      filters: subClass.map((x: string) => ({ text: x, value: x })),
+      onFilter: (value: string, record: Row) => record.class === value,
+    },
+    {
+      title: "已入库",
+      dataIndex: "store",
+      width: 80,
+      sorter: (a: number, b: number) =>
+        a.zh_tw.length - b.zh_tw.length > 0 ? 1 : -1,
+      render: renderContent,
+    },
+    {
+      title: "想看",
+      dataIndex: "tmp_store",
+      width: 70,
+      sorter: (a: number, b: number) =>
+        a.zh_tw.length - b.zh_tw.length > 0 ? 1 : -1,
+      render: renderContent,
+    },
+    {
+      title: "日文",
+      dataIndex: "jp",
+      width: 100,
+      render: renderContent,
+    },
+    {
+      title: "英文",
+      dataIndex: "en",
+      width: 100,
+      render: renderContent,
+    },
+
+    {
+      title: "备注",
+      dataIndex: "note",
+      width: 180,
+      render: renderContent,
+    },
+    {
+      title: "操作",
+      dataIndex: "operate",
+      fixed: true,
+      width: 90,
+      render: (_text: unknown, content: Row) => {
+        return (
+          <Space>
+            <Text
+              style={{
+                cursor: "pointer",
+                color: "var(--semi-color-link-visited)",
+              }}
+              link
+              onClick={() => {
+                setCurrentRow(content);
+                setEditVisible(true);
+              }}
+            >
+              更多
+            </Text>
+          </Space>
+        );
+      },
+    },
+  ];
 
   useEffect(() => {
     const onResize = () => {
-      const h = document.querySelector(".semi-layout-content")?.offsetHeight;
-      const w = document.querySelector(".semi-layout-content")?.offsetWidth;
-      if (h) {
-        setScrollProp({ y: h - 140, x: w - 40 });
-      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const wrapDom: Element | any = document.querySelector(
+        ".semi-layout-content"
+      );
+      const h = wrapDom?.offsetHeight;
+      const w = wrapDom?.offsetWidth;
+      setScrollProp({ y: h - 140, x: w - 40 });
     };
     onResize();
     window.addEventListener("resize", onResize);
-
     return () => {
       window.removeEventListener("resize", onResize);
     };
   }, []);
 
-  const rowSelection = useMemo(
-    () => ({
-      onChange: (selectedRowKeys, selectedRows) => {
-        console.log(
-          `selectedRowKeys: ${selectedRowKeys}`,
-          "selectedRows: ",
-          selectedRows
-        );
-      },
-      getCheckboxProps: (record) => ({
-        disabled: record.name === "Michael James", // Column configuration not to be checked
-        name: record.name,
-      }),
-    }),
-    []
-  );
-
   useEffect(() => {
     (async () => {
       setLoading(true);
       const res = await window.app?.getTags({});
-      console.log(res);
+      // console.log(res);
       setData(res.data);
       setLoading(false);
     })();
   }, []);
 
-  const handleRow = (record, index) => {
+  const handleRow: any = (_record: Row, index: number) => {
     // 给偶数行设置斑马纹
     if (index % 2 === 0) {
       return {
@@ -230,12 +216,34 @@ function App() {
     }
   };
 
+  const search = async () => {
+    let params = {
+      [dimension]: searchWord,
+    };
+    setLoading(true);
+    if (!params[dimension] || !dimension) params = {};
+    const res = await window.app?.getTags(params);
+    // console.log(res);
+    setData(res.data);
+    setLoading(false);
+  };
+
   return (
     <>
       <div style={{ marginBottom: 10, display: "flex" }}>
         <h2 style={{ margin: "0 20px 0 0" }}>标签管理</h2>
         <InputGroup>
-          <Select style={{ width: "150px" }} placeholder="检索维度">
+          <Select
+            onChange={setDimension}
+            value={dimension}
+            style={{ width: "150px" }}
+            placeholder="检索维度"
+            showClear
+            onClear={() => {
+              setSearchWord("");
+              search();
+            }}
+          >
             <Select.Option value="zh_tw">中文名</Select.Option>
             <Select.Option value="jp">日文名</Select.Option>
             <Select.Option value="en">英文名</Select.Option>
@@ -244,7 +252,10 @@ function App() {
             placeholder="请输入"
             style={{ width: 400 }}
             suffix={<IconSearch />}
+            value={searchWord}
+            onChange={setSearchWord}
             showClear
+            onEnterPress={search}
           ></Input>
         </InputGroup>
       </div>
@@ -254,14 +265,45 @@ function App() {
         size="small"
         columns={columns}
         dataSource={dataSource}
+        empty={
+          <Empty
+            description={<div style={{ marginBottom: 200 }}>找不到</div>}
+            image={
+              <IllustrationNoResult
+                style={{ marginTop: 200, width: 150, height: 150 }}
+              />
+            }
+          />
+        }
         // rowSelection={rowSelection}
         scroll={{ y: scrollProp.y }}
         pagination={false}
         loading={loading}
-        virtualized
+        // virtualized
         style={{ width: "100%", margin: "0 auto" }}
         onRow={handleRow}
         resizable
+      />
+      <EditModal
+        currentRow={currenRow}
+        visible={editVisible}
+        handleOk={async (params: Row) => {
+          const res = await window.app.updateTag(params);
+          return res?.success;
+        }}
+        afterOk={async () => {
+          await search();
+          Notification.success({
+            title: "修改成功",
+            position: "bottomRight",
+            // content: "ies dance dance dance",
+            duration: 3,
+          });
+        }}
+        onCancel={() => {
+          setEditVisible(false);
+          setCurrentRow(null);
+        }}
       />
     </>
   );

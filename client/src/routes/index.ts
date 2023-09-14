@@ -4,6 +4,9 @@ import { RouteObject } from "react-router-dom";
 import {
   IconHome,
   IconHistogram,
+  IconUserSetting,
+  IconBookmark,
+  IconUserGroup,
   IconLive,
   IconSetting,
   IconGridSquare,
@@ -11,6 +14,8 @@ import {
   IconDownload,
   IconBox,
   IconCustomize,
+  IconPriceTag,
+  IconGlobeStroke,
 } from "@douyinfe/semi-icons";
 import { routerConfig } from "./types";
 import { transfer2Routes } from "./lib";
@@ -46,16 +51,47 @@ export const routerConfigs: routerConfig[] = [
         icon: IconGridSquare,
         children: [
           {
-            path: "/dataSet/Tags",
-            name: "Tags",
-            elePath: "@/pages/Tags",
-            icon: IconLive,
-          },
-          {
             path: "/dataSet/gather",
             name: "采集",
             icon: IconDownload,
             elePath: "@/pages/Gather",
+          },
+          {
+            path: "/dataSet/actress",
+            name: "艺术家",
+            elePath: "@/pages/Actress",
+            icon: IconUserGroup,
+          },
+          {
+            path: "/dataSet/tags",
+            name: "标签",
+            elePath: "@/pages/Tags",
+            icon: IconPriceTag,
+          },
+          {
+            path: "/dataSet/studios",
+            name: "制作商",
+            elePath: "@/pages/Studios",
+            // elePath: "@/pages/Gather",
+            icon: IconUserCardVideo,
+          },
+          {
+            path: "/dataSet/labels",
+            name: "发行商",
+            elePath: "@/pages/Labels",
+            icon: IconGlobeStroke,
+          },
+          {
+            path: "/dataSet/director",
+            name: "导演",
+            elePath: "@/pages/Directors",
+            icon: IconUserSetting,
+          },
+          {
+            path: "/dataSet/series",
+            name: "系列",
+            elePath: "@/pages/Series",
+            icon: IconBookmark,
           },
         ],
       },

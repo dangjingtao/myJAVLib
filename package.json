@@ -2,7 +2,7 @@
   "name": "eletron_app",
   "scripts": {
     "start": "electron .",
-    "dev-electron": "cross-env NODE_ENV=development electron server/main.ts",
+    "dev-electron": "cross-env NODE_ENV=development electron server/main.js",
     "dev-client": "cd client && cross-env yarn dev",
     "electron-start": "yarn build && cross-env NODE_ENV=production electron server/main.js",
     "ci": "start-server-and-test dev-client http://localhost:8080 dev-electron"
@@ -17,6 +17,7 @@
     "cross-env": "^7.0.3",
     "electron": "^26.1.0",
     "eletron": "^0.0.1-security",
+    "nodemon": "^3.0.1",
     "start-server-and-test": "^2.0.0",
     "wait-on": "^7.0.1"
   },
