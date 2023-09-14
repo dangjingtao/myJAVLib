@@ -17,7 +17,9 @@ class AirAv {
     const page = await browser.newPage();
 
     // Navigate the page to a URL
-    await page.goto(url);
+    await page.goto(url, {
+      waitUtil: "networkidle2",
+    });
     const body = await page.content();
     const $ = await cheerio.load(body);
     try {
@@ -36,13 +38,15 @@ class AirAv {
 
   async getArtists(pageNum) {
     const { PROXY, HOST, logger } = this;
-    console.log(`[AIRAV]开始抓取艺术家数据`);
+    console.log(`[AIRAV]开始抓取第 ${pageNum} 页艺术家们的数据`);
     const url = `${HOST}/api/actor/list?search_type=actors&sort=hot&country=jp&page=${pageNum}&lng=zh-TW`;
     const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
-
+    await page.setDefaultNavigationTimeout(0);
     // Navigate the page to a URL
-    await page.goto(url);
+    await page.goto(url, {
+      waitUtil: "networkidle2",
+    });
     const body = await page.content();
     const $ = await cheerio.load(body);
     try {
@@ -54,38 +58,49 @@ class AirAv {
       let arr = [];
       const { result } = data;
       if (Array.isArray(result)) {
-        for (let i = 0; i < result.length; i++) {
-          const info = await this.getArtistInfo(result[i].id);
-          // console.log("---", info);
-          arr.push(info);
-        }
+        const ret = "";
+        return new Promise((resolve, reject) => {
+          try {
+            resolve(Promise.all(result.map((x) => this.getArtistInfo(x))));
+          } catch (error) {
+            console.info(`[AIRAV]艺术家抓取数据失败,将于10秒后重试...`, error);
+            resolve("");
+          }
+        });
+        // for (let i = 0; i < result.length; i++) {
+        //   const info = await this.getArtistInfo(result[i].id);
+        //   // console.log("---", info);
+        //   arr.push(info);
+        // }
       }
-      console.info(`[AIRAV]抓取艺术家数据完成`);
+      // console.info(`[AIRAV]抓取艺术家数据完成`);
 
-      return arr;
-      return data?.count ? data?.result : {};
+      // return arr;
     } catch (error) {
       console.info(`[AIRAV]艺术家抓取数据失败`, error);
       return {};
     }
   }
 
-  async getArtistInfo(id) {
+  async getArtistInfo({ id, all_name }) {
     const { PROXY, HOST, logger } = this;
-    console.log(`[AIRAV]开始抓取艺术家${id}数据`);
+    // console.log(`[AIRAV]开始抓取艺术家${id}数据`);
+    const s = Date.now();
     const url = `${HOST}/api/actor/id/${id}?lng=zh-TW`;
     const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
-
+    await page.setDefaultNavigationTimeout(0);
     // Navigate the page to a URL
-    await page.goto(url);
+    await page.goto(url, {
+      waitUtil: "networkidle2",
+    });
     const body = await page.content();
     const $ = await cheerio.load(body);
     try {
       const text = $("body").text().replace("The service is unavailable.", "");
       const newText = text.replace("The service is unavailable.", "");
       if (text != newText)
-        console.warn(`[AIRAV]艺术家${id}详情请求到非预期数据`);
+        console.warn(`[AIRAV]艺术家【${all_name}】- ${id}详情请求到非预期数据`);
       const data = JSON.parse(newText);
       await browser.close();
       if (data.result) {
@@ -97,10 +112,13 @@ class AirAv {
           );
         }
       }
-      console.info(`[AIRAV]抓取艺术家${id}数据完成`);
+      const e = Date.now();
+      console.info(
+        `[AIRAV]抓取艺术家【${all_name}】${id}数据完成，用时${(e - s) / 1000}秒`
+      );
       return data?.count ? data?.result : {};
     } catch (error) {
-      console.info(`[AIRAV]艺术家${id}抓取数据失败`, error);
+      console.info(`[AIRAV]艺术家【${all_name}】- ${id}抓取数据失败`, error);
       return {};
     }
     // i
