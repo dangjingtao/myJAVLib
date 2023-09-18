@@ -1,9 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import BaseTablePage from "@/blocks/BaseTablePage";
 import ArtistCard from "./component/ArtistCard";
 import { getAge } from "@/lib/calcDate";
-import { Progress } from "@douyinfe/semi-ui";
+import { Segmented, Space, Switch, Table, Typography } from "antd";
+import { Progress, Input, Notification } from "@douyinfe/semi-ui";
+// import { SheetComponent } from "@antv/s2-react";
+import "@antv/s2-react/dist/style.min.css";
+import { IconSearch } from "@douyinfe/semi-icons";
+import { IllustrationNoResult } from "@douyinfe/semi-illustrations";
 
-const getComplete = (record) => {
+import useWrap from "@/hooks/useWrap";
+
+const getComplete = (record: never) => {
+  if (!record) return null;
   const dict = {
     name: 1 / 17,
     debut: 0.05,
@@ -35,6 +44,15 @@ const getComplete = (record) => {
   return ret;
 };
 
+const getStoreCount = (text: string | null) => {
+  const cur = text?.replaceAll("\\", "").replaceAll('"', "");
+  let count = 0;
+  if (cur) {
+    count = cur.split(",").length;
+  }
+  return count;
+};
+
 const RenderComplete = ({ percent }) => {
   const strokeArr = [
     { percent: 0, color: "red" },
@@ -55,95 +73,211 @@ const RenderComplete = ({ percent }) => {
   );
 };
 
-export default function index() {
+function Page() {
   const columns = [
     {
       title: "艺名",
       dataIndex: "name",
-      width: 120,
-      resize: true,
+      // width: "auto",
+      width: 160,
+      fixed: "left",
+      // sort: true,
+      // defaultSortOrder: "descend",
+      sorter: (a, b) => a.name - b.name,
     },
     {
       title: "评分",
       dataIndex: "rate",
-      width: 60,
-      sorter: (a: number, b: number) => (a - b > 0 ? 1 : -1),
+      width: 80,
+      filters: [
+        {
+          text: "有评分",
+          value: "hasRate",
+        },
+        {
+          text: "无评分",
+          value: "noRate",
+        },
+      ],
+      onFilter: (value: string, record) => {
+        return value === "hasRate" ? !!record.rate : !record.rate;
+      },
     },
     {
       title: "完整度",
       dataIndex: "complete",
-      width: 150,
-      render: (_text: undefined, record) => (
+      width: "auto",
+      sorter: (a, b) => {
+        return a.complete - b.complete;
+      },
+      render: (text, record, index) => (
         <RenderComplete percent={getComplete(record)} />
       ),
-      sorter: (a, b) => (getComplete(a) - getComplete(b) > 0 ? 1 : -1),
+      // formatter: (_t: any, _r: any, sheet: { rowId: string | number }) => {
+      //   const record = data[sheet.rowId];
+      //   return getComplete(record);
+      // },
     },
     {
       title: "中文名",
       dataIndex: "name_CN",
-      width: 70,
-      sorter: (a: number, b: number) => (a - b > 0 ? 1 : -1),
+      width: "100px",
+      ellipsis: true,
     },
-
-    // {
-    //   title: "英文名",
-    //   dataIndex: "name_EN",
-    //   width: 70,
-    // },
-
+    {
+      title: "英文名",
+      dataIndex: "name_EN",
+      width: "100px",
+      ellipsis: true,
+    },
     {
       title: "出生",
       dataIndex: "birth",
-      width: 120,
+      width: 150,
       render: (text) => {
         if (!text || text === "0000-00-00") {
           return "--";
         }
         return `${text}(${getAge(text)}岁)`;
       },
-      sorter: (a: number, b: number) => (a - b > 0 ? 1 : -1),
+      sorter: (a, b) => (getAge(a.birth) - getAge(b.birth) > 0 ? 1 : -1),
     },
     {
       title: "身高",
       dataIndex: "tall",
-      width: 90,
-      render: (text) => (text ? `${text}cm` : "--"),
-      sorter: (a: number, b: number) => (a - b > 0 ? 1 : -1),
+      width: "auto",
+      render: (text: any) => (text ? `${text}cm` : "--"),
     },
     {
       title: "三围",
       dataIndex: "sanwei",
-      width: 90,
       render: (_text, record) =>
         `${record.breast || "--"}/${record.waist || "--"}/${
           record.hip || "--"
         }`,
     },
-
     {
       title: "已入库",
       dataIndex: "store",
-      width: 80,
-      sorter: (a: number, b: number) => (a - b > 0 ? 1 : -1),
+      width: 60,
+      render: getStoreCount,
     },
     {
       title: "想看",
       dataIndex: "tmp_store",
-      width: 70,
-      sorter: (a: number, b: number) => (a - b > 0 ? 1 : -1),
+      width: 60,
     },
-    // {
-    //   title: "备注",
-    //   dataIndex: "note",
-    //   width: 180,
-    // },
+    {
+      title: "操作",
+      dataIndex: "operate",
+      width: "auto",
+      fixed: "right",
+      render: (node, record) => {
+        // console.log(node);
+        return (
+          <a
+            onClick={() => {
+              setCurrentRow(record);
+              setVisible(true);
+            }}
+          >
+            查看
+          </a>
+        );
+      },
+    },
   ];
+  const [wrap, setWrap] = useWrap({});
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [currentRow, setCurrentRow] = useState(null);
+  const [searchWord, setSearchWord] = useState("");
+
+  const [data, setData] = useState<any[]>([]);
+
+  const query = async () => {
+    setLoading(true);
+    const records =
+      (
+        await window.app?.getBaseDataByTableName({
+          tableName: "actor",
+          params: {},
+          orLike: {
+            word: searchWord,
+            columns: ["name_JP", "name_EN", "name_CN"],
+          },
+        })
+      )?.data || [];
+    records.forEach((x) => {
+      x.complete = getComplete(x);
+    });
+    // console.log(getComplete(records[0]));
+    setData(records);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (!searchWord) {
+      query();
+    }
+  }, [searchWord]);
+
+  useEffect(() => {
+    query();
+  }, []);
+
   return (
-    <BaseTablePage
-      EditModal={ArtistCard}
-      title={"艺术家管理"}
-      tableName={"actor"}
-      columns={columns}
-    />
+    <>
+      <div style={{ marginBottom: 10, display: "flex" }}>
+        <h2 style={{ margin: "0 20px 0 0" }}>艺术家管理</h2>
+        <Input
+          placeholder="模糊查询"
+          style={{ width: 400 }}
+          suffix={<IconSearch />}
+          value={searchWord}
+          onChange={setSearchWord}
+          onEnterPress={query}
+        ></Input>
+      </div>
+      <Table
+        loading={loading}
+        size={"small"}
+        bordered={true}
+        virtual
+        columns={columns}
+        scroll={{
+          x: wrap.width - 200,
+          y: wrap.height - 140,
+        }}
+        rowKey="id"
+        dataSource={data}
+        pagination={false}
+      />
+      <ArtistCard
+        currentRow={currentRow}
+        visible={visible}
+        onCancel={() => {
+          setVisible(false);
+        }}
+        handleOk={async (params: Row) => {
+          const res = await window.app.updateBaseDataByTableName({
+            tableName: "actor",
+            params,
+          });
+          console.log(params, res);
+          return res?.success;
+        }}
+        afterOk={async () => {
+          await query();
+          Notification.success({
+            title: "修改成功",
+            position: "bottomRight",
+            duration: 3,
+          });
+        }}
+      />
+    </>
   );
 }
+
+export default Page;

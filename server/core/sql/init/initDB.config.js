@@ -1,7 +1,7 @@
 const fs = require("fs");
 const csv = require("csv-parser");
 const path = require("path");
-const busTag = require("./busTags.json");
+const busTag = require("./newTags.json");
 const airAvActress = require("./actor.json");
 
 const getTagsInit = () => {
@@ -16,43 +16,66 @@ const getTagsInit = () => {
       .on("end", () => {
         // CSV文件读取结束时触发此回调函数
         // console.log(results);
-        // results.forEach((x) => {
-        //   const { code } = x;
-        //   Object.keys(censored).forEach((theme) => {
-        //     const isThis = censored[theme].find((y) => y.code === code);
-        //     if (isThis) {
-        //       x.classType = "censored";
-        //       x.class = theme;
-        //     }
-        //   });
-        //   Object.keys(uncensored).forEach((theme) => {
-        //     const isThis = uncensored[theme].find(
-        //       (y) => y.code === code?.replace("uncensored-", "")
-        //     );
-        //     if (isThis) {
-        //       x.code = x.code.replace("uncensored-", "");
-        //       x.classType = "uncensored";
-        //       x.class = theme;
-        //     }
-        //   });
-        //   x.url = undefined;
-        // });
-        resolve(results);
+        results.forEach((x) => {
+          const { code } = x;
+          const arr = code.split("-");
+          const curCode = arr.length === 1 ? arr[0] : arr[1];
+          const isUncensored = arr.length == 2;
+          const curTag = busTag.find(
+            (y) => y.code === curCode && y.jp === x.jp
+          );
+          // if (!curTag) {
+          //   console.log(111111, curTag, curCode);
+          // }
+          curTag.classType = isUncensored ? "uncensored" : "censored";
+
+          if (curCode === "13") {
+            console.log("----", curTag, code);
+          }
+          // Object.keys(censored).forEach((theme) => {
+          //   const isThis = censored[theme].find((y) => y.code === code);
+          //   if (isThis) {
+          //     x.classType = "censored";
+          //     x.class = theme;
+          //   }
+          // });
+          // Object.keys(uncensored).forEach((theme) => {
+          //   const isThis = uncensored[theme].find(
+          //     (y) => y.code === code?.replace("uncensored-", "")
+          //   );
+          //   if (isThis) {
+          //     x.code = x.code.replace("uncensored-", "");
+          //     x.classType = "uncensored";
+          //     x.class = theme;
+          //   }
+          // });
+          x.url = undefined;
+        });
+        resolve(busTag);
       });
   });
 };
+
+// getTagsInit().then(async (res) => {
+//   // console.log(res);
+//   await fs.writeFileSync("./newTags.json", JSON.stringify(res));
+//   console.log("done");
+// });
 
 const getDB = async (tables = []) => {
   const initTags = busTag;
   airAvActress.forEach((x) => {
     const { id, name } = x;
+
     x.airav_id = id;
-    const [name_JP, name_CN, name_EN] = name.split("/");
+    const [name_JP, name_CN, name_EN] = name?.split("/") || [];
     x.name_JP = name_JP;
     x.name_CN = name_CN;
     x.name_EN = name_EN;
     x.name = name_JP;
-    x.tags = x.tags;
+    x.airav_tags = x.tags;
+    x.tags = "";
+    x.localTags = "";
     x.images = x.images;
     x.cover = x.photo;
     x.isRetired = false;

@@ -27,6 +27,7 @@ import { IconSearch } from "@douyinfe/semi-icons";
 // 在渲染进程中
 import { io } from "socket.io-client";
 import { Pane, SplitPane } from "@/components/Split";
+import json from "./result";
 
 const { Text } = Typography;
 
@@ -60,7 +61,7 @@ const Index = () => {
   const [fileList, setFileList] = useState([]);
   const [outfit, setOutfit] = useState("JUFD-465");
   const [loggerInfo, setLoggerInfo] = useState([]);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(json);
 
   const refDom = useRef<any>(null);
 
@@ -88,6 +89,11 @@ const Index = () => {
     setFileList([]);
     setOutfit("JUFD-465");
   }, [gatherType]);
+
+  const yiku = async () => {
+    const res = await window.app?.yiku({ record: result });
+    console.log(res);
+  };
 
   return (
     <div
@@ -178,7 +184,11 @@ const Index = () => {
             <Card
               title={result?.outfit + "  " + result?.titleCN}
               style={{ marginTop: "20px" }}
-              headerExtraContent={<Text link>入库</Text>}
+              headerExtraContent={
+                <Text link onClick={yiku}>
+                  入库
+                </Text>
+              }
               cover={
                 <Row>
                   <Col span={16}>

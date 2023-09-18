@@ -3,8 +3,8 @@ import "echarts-wordcloud";
 
 export const AnimationCloud = ({ data = [] }) => {
   useEffect(() => {
-    const ele = document.querySelector("#wordCloud");
-    var chart = echarts.init(ele);
+    const ele: HTMLElement = document.querySelector("#wordCloud")!;
+    const chart = echarts.init(ele);
     chart.setOption({
       // ...
       series: [
@@ -40,7 +40,7 @@ export const AnimationCloud = ({ data = [] }) => {
           // Text size range which the value in data will be mapped to.
           // Default to have minimum 12px and maximum 60px size.
 
-          sizeRange: [14, 40],
+          sizeRange: [10, 36],
 
           // Text rotation range and step in degree. Text will be rotated randomly in range [-90, 90] by rotationStep 45
 
@@ -98,11 +98,15 @@ export const AnimationCloud = ({ data = [] }) => {
       ],
     });
     return () => {};
-  }, []);
+  }, [data]);
   return (
     <div
       id="wordCloud"
-      style={{ width: "100%", height: 60, background: "#fafafa" }}
-    ></div>
+      style={{
+        width: "100%",
+        height: 360,
+        background: "#fafafa",
+      }}
+    />
   );
 };
