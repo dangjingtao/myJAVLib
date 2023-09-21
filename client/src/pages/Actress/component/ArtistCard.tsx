@@ -17,59 +17,30 @@ import {
   Tooltip,
   Rating,
   Spin,
-  Tabs,
-  TabPane,
-  List,
-  Empty,
 } from "@douyinfe/semi-ui";
 import { IconUploadError, IconLikeHeart } from "@douyinfe/semi-icons";
 import { ModalReactProps } from "@douyinfe/semi-ui/lib/es/modal";
-import type { Row as MyRow } from "../types";
+import type { Record, ShowTag, Cover } from "../types";
 import { getAstro } from "@/lib/calcDate";
 import getCups from "@/lib/getCups";
-import _, { divide } from "lodash";
+import _ from "lodash";
 import { IMAGE_SET_PREFIX } from "../constants";
 import { AnimationCloud } from "@/components/TagCloud";
 import {
   IllustrationNoContent,
   IllustrationNoContentDark,
 } from "@douyinfe/semi-illustrations";
+import StorePane from "./StorePane";
 interface EditModalProps extends ModalReactProps {
   visible: boolean;
-  currentRow: MyRow | null;
+  currentRow: Record;
   // eslint-disable-next-line @typescript-eslint/ban-types
   handleOk: Function;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   afterOk: (arg: any) => void;
 }
 
-const { Title, Paragraph, Text } = Typography;
-
-async function getImgWidthHeight(src, maxWaitLoad = 2500) {
-  return new Promise((resolve, reject) => {
-    let img = new Image();
-    img.src = src;
-    if (img.complete) {
-      const { width, height } = img;
-      resolve({
-        width,
-        height,
-      });
-    } else {
-      let timeOut = setTimeout(() => {
-        reject("图片加载失败！");
-      }, maxWaitLoad);
-      img.onload = function () {
-        const { width, height } = img;
-        window.clearTimeout(timeOut);
-        resolve({
-          width,
-          height,
-        });
-      };
-    }
-  });
-}
+const { Title } = Typography;
 
 const arrayFormatter = (str: string | null) => {
   str = str ? str + "" : str;
@@ -89,67 +60,65 @@ const EditModal = ({
   currentRow,
   ...restProps
 }: EditModalProps) => {
-  const [form, setForm] = useState<any>({});
-  const [coverObj, setCoverObj] = useState({ width: 364, height: 530 });
-  const [showTag, setShowTag] = useState([]);
+  const [form, setForm] = useState<Record>({ id: -1 });
+  const [coverObj, setCoverObj] = useState<Cover>({ width: 364, height: 530 });
+  const [showTag, setShowTag] = useState<ShowTag[]>([]);
   const [loading, setLoading] = useState(false);
   const cups = getCups();
   const astro = getAstro(form?.birth);
-  const store_data = arrayFormatter(currentRow?.store);
 
   const init = async ({ visible }: { visible: boolean }) => {
     if (visible) {
-      setLoading(true);
       const row = _.cloneDeep(currentRow);
-      delete row.images;
-      delete row.tags;
-      setForm(row);
-      const tag_codes_string = currentRow?.tags.replaceAll('"', "");
-      const tag_codes_arr = tag_codes_string
-        ? (tag_codes_string + "").split(",")
-        : [];
-
-      if (tag_codes_arr.length) {
-        const arr: any[] = [];
-        window.app
-          .getBaseDataByTableName({
-            tableName: "tag",
-            params: {
-              classType: "censored",
-              code: Array.from(new Set(tag_codes_arr)),
-            },
-          })
-          .then((res) => {
-            if (res.data.length) {
-              tag_codes_arr.forEach((tagCode) => {
-                const curName = res.data.find((x) => x.code === tagCode)?.zh_tw;
-                const curItem = arr.find((x) => x.name === curName);
-                if (!curItem && curName) {
-                  arr.push({ name: curName, value: 1 });
-                } else if (curName) {
-                  curItem.value += 1;
-                }
-              });
-            }
-            console.log(arr);
-            setShowTag(arr);
-            setLoading(false);
-          });
-      } else {
-        const a_tags = currentRow?.airav_tags
-          ? JSON.parse(currentRow?.airav_tags)
+      if (row) {
+        setLoading(true);
+        delete row?.images;
+        delete row?.tags;
+        setForm(row);
+        const tag_codes_string = currentRow?.tags || "";
+        const tag_codes_arr = tag_codes_string
+          ? (tag_codes_string + "").split(",")
           : [];
-        console.log(currentRow?.airav_tags);
-        const tagsCloudData = a_tags.map((x) => ({
-          name: x.tag_name_zh_TW,
-          value: x.total_tags,
-        }));
-        setShowTag(tagsCloudData);
-        // console.log(tagsCloudData);
-        setLoading(false);
+        if (tag_codes_arr.length) {
+          const arr: any[] = [];
+          window.app
+            .getBaseDataByTableName({
+              tableName: "tag",
+              params: {
+                classType: "censored", //todo
+                code: Array.from(new Set(tag_codes_arr)),
+              },
+            })
+            .then((res: any) => {
+              if (res.data.length) {
+                tag_codes_arr.forEach((tagCode: string) => {
+                  const curName = res.data.find(
+                    (x: any) => x.code === tagCode
+                  )?.zh_tw;
+                  const curItem = arr.find((x) => x.name === curName);
+                  if (!curItem && curName) {
+                    arr.push({ name: curName, value: 1 });
+                  } else if (curName) {
+                    curItem.value += 1;
+                  }
+                });
+              }
+
+              setShowTag(arr);
+              setLoading(false);
+            });
+        } else {
+          const a_tags: any[] = currentRow?.airav_tags || [];
+          const tagsCloudData: ShowTag[] = a_tags.map((x) => ({
+            name: x.tag_name_zh_TW,
+            value: x.total_tags,
+          }));
+          setShowTag(tagsCloudData);
+          setLoading(false);
+        }
       }
     } else {
-      setForm({});
+      setForm({ id: -1 });
       setShowTag([]);
       setLoading(false);
     }
@@ -160,24 +129,25 @@ const EditModal = ({
   }, [visible]);
 
   const setField = (field: string, value: any) => {
-    const _form = _.cloneDeep(form);
+    const _form: Record = _.cloneDeep(form);
     _form[field] = value;
     setForm(_form);
   };
 
-  const bindVal = (field: any) => {
+  const bindVal = (field: string) => {
     const isDate = field === "debut" || field === "birth";
+    const isSelect = field === "cup";
     return {
-      value: form[field] || null,
+      value: isSelect ? [form[field]] : form[field] || null,
       onChange: isDate
-        ? (e: any, val: any) => setField(field, val)
+        ? (_e: any, val: any) => setField(field, val)
         : (val: any) => {
             setField(field, val);
           },
     };
   };
 
-  const images = currentRow?.images ? JSON.parse(currentRow.images) : [];
+  const images = currentRow?.images || [];
 
   return (
     <Modal
@@ -187,7 +157,7 @@ const EditModal = ({
         setLoading(true);
         const id = currentRow?.id || "";
         const result = await handleOk({
-          id: id,
+          id,
           ...form,
         });
 
@@ -213,7 +183,7 @@ const EditModal = ({
     >
       <Spin spinning={loading}>
         <div id="modal" style={{ position: "relative" }}>
-          <Row gutter={[10]}>
+          <Row gutter={[10, 0]}>
             <Col span={8}>
               <div style={{ height: 530, width: "364px", overflow: "hidden" }}>
                 <Image
@@ -221,7 +191,8 @@ const EditModal = ({
                   height={coverObj.height}
                   src={form?.cover}
                   onLoad={(e) => {
-                    const { width, height } = e.target;
+                    const target: any = e.target!;
+                    const { width, height } = target;
                     setCoverObj({
                       width: width / height > 36.4 / 53 ? undefined : 364,
                       height: width / height > 36.4 / 53 ? 530 : undefined,
@@ -427,72 +398,7 @@ const EditModal = ({
                 />
               </Row>
               <br />
-              <Card
-                // cover={<AnimationCloud data={showTag} />}
-                // bodyStyle={{ display: "none" }}
-                bodyStyle={{
-                  height: 414,
-                  overflow: "hidden",
-                  margin: 0,
-                  padding: "10px 0px 0 10px",
-                }}
-              >
-                <Tabs
-                  size="large"
-                  type="card"
-                  tabList={[
-                    { tab: "本地片单", itemKey: "1" },
-                    { tab: "库内片单", itemKey: "2" },
-                  ]}
-                >
-                  <TabPane itemKey="1">
-                    <List
-                      emptyContent={
-                        <Empty
-                          image={
-                            <IllustrationNoContent
-                              style={{ width: 150, height: 150, marginTop: 60 }}
-                            />
-                          }
-                          darkModeImage={
-                            <IllustrationNoContentDark
-                              style={{ width: 150, height: 150, marginTop: 60 }}
-                            />
-                          }
-                          title="空空如也"
-                          description={`快去搜索创建关于爱豆的作品集！`}
-                        ></Empty>
-                      }
-                      dataSource={store_data}
-                      renderItem={(item) => <List.Item>{item}</List.Item>}
-                      style={{ overflow: "auto", height: 360 }}
-                    />
-                  </TabPane>
-                  <TabPane itemKey="2">
-                    <List
-                      size="small"
-                      emptyContent={
-                        <Empty
-                          image={
-                            <IllustrationNoContent
-                              style={{ width: 150, height: 150, marginTop: 60 }}
-                            />
-                          }
-                          darkModeImage={
-                            <IllustrationNoContentDark
-                              style={{ width: 150, height: 150 }}
-                            />
-                          }
-                          title="空状态标题"
-                          description="开始创建你的第一个仪表盘吧！"
-                        ></Empty>
-                      }
-                      dataSource={[]}
-                      renderItem={(item) => <List.Item>{item}</List.Item>}
-                    />
-                  </TabPane>
-                </Tabs>
-              </Card>
+              <StorePane store={currentRow?.store} />
             </Col>
           </Row>
 

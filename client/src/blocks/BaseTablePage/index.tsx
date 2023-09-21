@@ -114,7 +114,7 @@ function App({
         ...params,
       },
     });
-    // console.log(res);
+    console.log(res);
     setData(res.data);
     setLoading(false);
   };

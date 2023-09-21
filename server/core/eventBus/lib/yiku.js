@@ -41,6 +41,7 @@ const bulkUpdate = async (tables = [], outfit) => {
           ...x,
           name: x.text,
           store: outfit,
+          updatedAt: new Date(),
         }));
       } else {
         updatedRecords = findRes.map((x) => {
@@ -51,12 +52,13 @@ const bulkUpdate = async (tables = [], outfit) => {
           return {
             ...x,
             ...newObj,
+            updatedAt: new Date(),
           };
         });
       }
 
       await instance.bulkCreate(updatedRecords, {
-        updateOnDuplicate: ["store"],
+        updateOnDuplicate: ["store", "updatedAt"],
       });
       console.log(`${name}表更新成功`);
     }
@@ -123,6 +125,7 @@ module.exports = async function (e, { record }) {
       ...result,
       busCode: a_actress_ids[i],
       ...newObj,
+      updatedAt: new Date(),
     };
   });
   // console.log("-----updateRes", updateRes);

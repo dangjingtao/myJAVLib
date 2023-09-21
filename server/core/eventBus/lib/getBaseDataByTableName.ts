@@ -26,12 +26,13 @@ module.exports = async function (
   }
 
   const result = await currentTable.findAll({
-    raw: true,
+    // raw: true,
     where,
+    order: [["updatedAt", "DESC"]],
     // offset: 0,
     // limit: 10000,
     // offset: (page - 1) * size,
     // limit:size
   });
-  return response.success(result);
+  return response.success(result.map((i) => i.toJSON()));
 };

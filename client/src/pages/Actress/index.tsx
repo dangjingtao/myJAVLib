@@ -83,7 +83,7 @@ function Page() {
       fixed: "left",
       // sort: true,
       // defaultSortOrder: "descend",
-      sorter: (a, b) => a.name - b.name,
+      sorter: (a, b) => (a.name - b.name > 0 ? 1 : -1),
     },
     {
       title: "评分",
@@ -140,7 +140,10 @@ function Page() {
         }
         return `${text}(${getAge(text)}岁)`;
       },
-      sorter: (a, b) => (getAge(a.birth) - getAge(b.birth) > 0 ? 1 : -1),
+      sorter: (a, b) => {
+        // console.log(a.birth, b.birth);
+        return getAge(a.birth) - getAge(b.birth) > 0 ? 1 : -1;
+      },
     },
     {
       title: "身高",
@@ -159,13 +162,15 @@ function Page() {
     {
       title: "已入库",
       dataIndex: "store",
-      width: 60,
+      width: 80,
       render: getStoreCount,
+      sorter: (a, b) =>
+        getStoreCount(a.store) - getStoreCount(b.store) > 0 ? 1 : -1,
     },
     {
       title: "想看",
       dataIndex: "tmp_store",
-      width: 60,
+      width: 80,
     },
     {
       title: "操作",

@@ -2,7 +2,7 @@ const path = require("path");
 const Data = require("../../../lib/Data");
 const queryDataByOutfit = async function (e, outfit) {
   const { socket, response } = this;
-  const curPath = path.join(__dirname, "../../tmp/");
+  const curPath = path.join(__dirname, "../../../tmp/");
 
   const data = new Data({
     dir: curPath,
