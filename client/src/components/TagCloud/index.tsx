@@ -1,7 +1,11 @@
 import * as echarts from "echarts";
 import "echarts-wordcloud";
+type ShowTag = {
+  name: string;
+  value: string;
+};
 
-export const AnimationCloud = ({ data = [] }) => {
+export const AnimationCloud = ({ data = [] }: { data: ShowTag[] }) => {
   useEffect(() => {
     const ele: HTMLElement = document.querySelector("#wordCloud")!;
     const chart = echarts.init(ele);

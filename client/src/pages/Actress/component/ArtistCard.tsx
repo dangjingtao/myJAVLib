@@ -17,6 +17,7 @@ import {
   Tooltip,
   Rating,
   Spin,
+  Button,
 } from "@douyinfe/semi-ui";
 import { IconUploadError, IconLikeHeart } from "@douyinfe/semi-icons";
 import { ModalReactProps } from "@douyinfe/semi-ui/lib/es/modal";
@@ -26,10 +27,6 @@ import getCups from "@/lib/getCups";
 import _ from "lodash";
 import { IMAGE_SET_PREFIX } from "../constants";
 import { AnimationCloud } from "@/components/TagCloud";
-import {
-  IllustrationNoContent,
-  IllustrationNoContentDark,
-} from "@douyinfe/semi-illustrations";
 import StorePane from "./StorePane";
 interface EditModalProps extends ModalReactProps {
   visible: boolean;
@@ -41,16 +38,6 @@ interface EditModalProps extends ModalReactProps {
 }
 
 const { Title } = Typography;
-
-const arrayFormatter = (str: string | null) => {
-  str = str ? str + "" : str;
-  if (!str) {
-    return [];
-  } else {
-    const arr = str.replaceAll("\\", "").replaceAll('"', "").split(",");
-    return arr;
-  }
-};
 
 const EditModal = ({
   visible,
@@ -118,15 +105,11 @@ const EditModal = ({
         }
       }
     } else {
-      setForm({ id: -1 });
+      setForm({});
       setShowTag([]);
       setLoading(false);
     }
   };
-  useEffect(() => {
-    init({ visible });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
 
   const setField = (field: string, value: any) => {
     const _form: Record = _.cloneDeep(form);
@@ -136,40 +119,80 @@ const EditModal = ({
 
   const bindVal = (field: string) => {
     const isDate = field === "debut" || field === "birth";
-    const isSelect = field === "cup";
+    const values: any = {
+      default: form[field] || null,
+      cup: [form[field] || null],
+      isRetired: [form[field] ? 1 : 0],
+    };
+
+    const onChangeMap = {
+      default: (val: any) => {
+        setField(field, val);
+      },
+      date: (_e: any, val: any): void => setField(field, val),
+    };
+
     return {
-      value: isSelect ? [form[field]] : form[field] || null,
-      onChange: isDate
-        ? (_e: any, val: any) => setField(field, val)
-        : (val: any) => {
-            setField(field, val);
-          },
+      value: values[field] || values.default,
+      onChange: isDate ? onChangeMap.date : onChangeMap.default,
     };
   };
 
+  const onOk = async (e: React.MouseEvent) => {
+    setLoading(true);
+    const id = currentRow?.id;
+    if (id) {
+      const result = await handleOk({
+        id,
+        ...form,
+      });
+      if (result) {
+        await afterOk(result);
+        setLoading(false);
+        onCancel(e);
+      }
+    }
+  };
+
+  const onCoverload = (e: Event) => {
+    const target: any = e.target!;
+    const { width, height } = target;
+    setCoverObj({
+      width: width / height > 36.4 / 53 ? undefined : 364,
+      height: width / height > 36.4 / 53 ? 530 : undefined,
+    });
+  };
+
+  const getWiki = async () => {
+    setLoading(true);
+    const res = await window.app?.wiki({
+      keyword: form?.name,
+      lang: "zh",
+    });
+    setLoading(false);
+    if (res.success) {
+      const { links = "", content = "" } = res.data;
+      console.log(res.data);
+      setForm({
+        ...form,
+        description: content,
+      });
+    }
+  };
+
   const images = currentRow?.images || [];
+
+  useEffect(() => {
+    init({ visible });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
   return (
     <Modal
       title={<div style={{ height: 10 }}></div>}
       visible={visible}
-      onOk={async (e) => {
-        setLoading(true);
-        const id = currentRow?.id || "";
-        const result = await handleOk({
-          id,
-          ...form,
-        });
-
-        if (result) {
-          await afterOk(result);
-          setLoading(false);
-          onCancel(e);
-        }
-      }}
-      onCancel={(e) => {
-        onCancel(e);
-      }}
+      onOk={onOk}
+      onCancel={onCancel}
       closeOnEsc={true}
       style={{ width: 1200, height: 900, overflow: "auto" }}
       bodyStyle={{
@@ -185,19 +208,12 @@ const EditModal = ({
         <div id="modal" style={{ position: "relative" }}>
           <Row gutter={[10, 0]}>
             <Col span={8}>
-              <div style={{ height: 530, width: "364px", overflow: "hidden" }}>
+              <div style={{ height: 530, width: 364, overflow: "hidden" }}>
                 <Image
                   width={coverObj.width}
                   height={coverObj.height}
                   src={form?.cover}
-                  onLoad={(e) => {
-                    const target: any = e.target!;
-                    const { width, height } = target;
-                    setCoverObj({
-                      width: width / height > 36.4 / 53 ? undefined : 364,
-                      height: width / height > 36.4 / 53 ? 530 : undefined,
-                    });
-                  }}
+                  onLoad={onCoverload}
                   placeholder={
                     <Spin spinning={true}>
                       <div
@@ -210,7 +226,7 @@ const EditModal = ({
                     </Spin>
                   }
                   fallback={<IconUploadError style={{ fontSize: 50 }} />}
-                ></Image>
+                />
               </div>
               <br />
               <Card
@@ -236,9 +252,13 @@ const EditModal = ({
                     {...bindVal("rate")}
                   />
                 </span>
+                <span style={{ display: "inline-block", float: "right" }}>
+                  <Button onClick={getWiki} size="small" type="secondary">
+                    wiki
+                  </Button>
+                </span>
               </Title>
               <Divider layout="horizontal" margin="12px" />
-
               <Row>
                 <Col span={8}>
                   <Descriptions
@@ -316,8 +336,6 @@ const EditModal = ({
                           />
                         ),
                       },
-
-                      // { key: "三围", value: "是" },
                     ]}
                   />
                 </Col>
@@ -336,7 +354,6 @@ const EditModal = ({
                           />
                         ),
                       },
-                      // { key: "是否退役", value: "是" },
                       {
                         key: "三围",
                         value: (
@@ -393,7 +410,7 @@ const EditModal = ({
                   rows={15}
                   placeholder="为你的爱豆来一段精彩的印象吧"
                   {...bindVal("description")}
-                  maxCount={2000}
+                  maxCount={8000}
                   showClear
                 />
               </Row>

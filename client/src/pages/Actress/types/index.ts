@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Record = {
-  id: string | number;
+  id?: string | number;
   name?: string;
   rate?: string | number;
   name_CN?: string | number;
@@ -19,16 +20,7 @@ export type Record = {
   airav_tags?: string;
   description?: string;
   images?: string[];
-  //   cn?: string;
-  //   code?: string;
-  //   jp?: string;
-  //   en?: string;
-  //   zh_tw?: string;
-  //   color?: string;
-  //   classType?: "censored" | "uncensored";
-  //   class?: string;
-  //   note?: string;
-  //   no_active: boolean;
+  [key: string]: any;
 };
 
 export type Cover = {

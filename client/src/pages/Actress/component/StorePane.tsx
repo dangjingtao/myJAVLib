@@ -1,10 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, Tabs, TabPane, List, Empty } from "@douyinfe/semi-ui";
-
 import {
   IllustrationNoContent,
   IllustrationNoContentDark,
 } from "@douyinfe/semi-illustrations";
+
+const CardEmpty = () => {
+  const imgStyle = { width: 150, height: 150, marginTop: 60 };
+  return (
+    <Empty
+      image={<IllustrationNoContent style={imgStyle} />}
+      darkModeImage={<IllustrationNoContentDark style={imgStyle} />}
+      title="空空如也"
+      description={`快去搜索创建关于爱豆的作品集！`}
+    />
+  );
+};
 
 const arrayFormatter = (str: string | null) => {
   str = str ? str + "" : str;
@@ -18,11 +29,8 @@ const arrayFormatter = (str: string | null) => {
 
 const StorePane = ({ store }: { store: string }) => {
   const store_data = arrayFormatter(store);
-
   return (
     <Card
-      // cover={<AnimationCloud data={showTag} />}
-      // bodyStyle={{ display: "none" }}
       bodyStyle={{
         height: 414,
         overflow: "hidden",
@@ -34,52 +42,22 @@ const StorePane = ({ store }: { store: string }) => {
         size="large"
         type="card"
         tabList={[
-          { tab: "本地片单", itemKey: "1" },
-          { tab: "库内片单", itemKey: "2" },
+          { tab: "本地片单", itemKey: "store" },
+          { tab: "库内片单", itemKey: "tmp_store" },
         ]}
       >
-        <TabPane itemKey="1">
+        <TabPane itemKey="store">
           <List
-            emptyContent={
-              <Empty
-                image={
-                  <IllustrationNoContent
-                    style={{ width: 150, height: 150, marginTop: 60 }}
-                  />
-                }
-                darkModeImage={
-                  <IllustrationNoContentDark
-                    style={{ width: 150, height: 150, marginTop: 60 }}
-                  />
-                }
-                title="空空如也"
-                description={`快去搜索创建关于爱豆的作品集！`}
-              ></Empty>
-            }
+            emptyContent={<CardEmpty />}
             dataSource={store_data}
             renderItem={(item) => <List.Item>{item}</List.Item>}
             style={{ overflow: "auto", height: 360 }}
           />
         </TabPane>
-        <TabPane itemKey="2">
+        <TabPane itemKey="tmp_store">
           <List
             size="small"
-            emptyContent={
-              <Empty
-                image={
-                  <IllustrationNoContent
-                    style={{ width: 150, height: 150, marginTop: 60 }}
-                  />
-                }
-                darkModeImage={
-                  <IllustrationNoContentDark
-                    style={{ width: 150, height: 150 }}
-                  />
-                }
-                title="空状态标题"
-                description="开始创建你的第一个仪表盘吧！"
-              ></Empty>
-            }
+            emptyContent={<CardEmpty />}
             dataSource={[]}
             renderItem={(item) => <List.Item>{item}</List.Item>}
           />

@@ -1,89 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import BaseTablePage from "@/blocks/BaseTablePage";
+
 import ArtistCard from "./component/ArtistCard";
-import { getAge } from "@/lib/calcDate";
-import { Segmented, Space, Switch, Table, Typography } from "antd";
-import { Progress, Input, Notification } from "@douyinfe/semi-ui";
-// import { SheetComponent } from "@antv/s2-react";
+import { getAge, getComplete, getStoreCount } from "@/lib/artist";
+import { Table } from "antd";
+import { Input, Notification } from "@douyinfe/semi-ui";
+import type { Record } from "@/types/artist";
 import "@antv/s2-react/dist/style.min.css";
 import { IconSearch } from "@douyinfe/semi-icons";
-import { IllustrationNoResult } from "@douyinfe/semi-illustrations";
-
 import useWrap from "@/hooks/useWrap";
-
-const getComplete = (record: never) => {
-  if (!record) return null;
-  const dict = {
-    name: 1 / 17,
-    debut: 0.05,
-    avatar: 1 / 17,
-    cover: 1 / 10,
-    description: 0.1,
-    birth: 0.05,
-    tall: 0.05,
-    breast: 0.03,
-    waist: 0.03,
-    hip: 0.03,
-    cup: 0.04,
-    birth_place: 0.01,
-    images: 0.12,
-    tags: 0.08,
-    nameJP: 0.1,
-    name_EN: 0.02,
-    name_CN: 0.02,
-    rate: 0.05,
-    isRetired: 0.02,
-  };
-  let ret = 1;
-  Object.entries(dict).forEach(([key, val]) => {
-    if (record[key] === null || record[key] === "") {
-      ret -= val;
-    }
-  });
-  ret = Math.round(1000 * ret) / 10;
-  return ret;
-};
-
-const getStoreCount = (text: string | null) => {
-  const cur = text?.replaceAll("\\", "").replaceAll('"', "");
-  let count = 0;
-  if (cur) {
-    count = cur.split(",").length;
-  }
-  return count;
-};
-
-const RenderComplete = ({ percent }) => {
-  const strokeArr = [
-    { percent: 0, color: "red" },
-    { percent: 20, color: "red" },
-    { percent: 40, color: "orange-6" },
-    { percent: 60, color: "var(--semi-color-warning)" },
-    { percent: 80, color: "orange-6" },
-  ];
-
-  return (
-    <Progress
-      percent={percent}
-      // stroke="var(--semi-color-warning)"
-      stroke={strokeArr}
-      showInfo={true}
-      aria-label="disk usage"
-    />
-  );
-};
-
+import RenderComplete from "./component/RenderComplete";
+const CommonRender = ({ content }: { content?: string }) => (
+  <div>{content || "--"}</div>
+);
 function Page() {
   const columns = [
     {
       title: "艺名",
       dataIndex: "name",
-      // width: "auto",
       width: 160,
       fixed: "left",
-      // sort: true,
-      // defaultSortOrder: "descend",
-      sorter: (a, b) => (a.name - b.name > 0 ? 1 : -1),
+      sorter: (a: Record, b: Record) => (a?.name - b?.name > 0 ? 1 : -1),
     },
     {
       title: "评分",
@@ -99,50 +35,65 @@ function Page() {
           value: "noRate",
         },
       ],
-      onFilter: (value: string, record) => {
+      onFilter: (value: string, record: Record) => {
         return value === "hasRate" ? !!record.rate : !record.rate;
       },
+      sorter: (a: Record, b: Record) =>
+        Number(a?.rate || 0) - Number(b?.rate || 0) > 0 ? 1 : -1,
+      render: (t?: string | number) => t || "--",
     },
     {
       title: "完整度",
       dataIndex: "complete",
       width: "auto",
-      sorter: (a, b) => {
+      sorter: (a: Record, b: Record) => {
         return a.complete - b.complete;
       },
-      render: (text, record, index) => (
+      render: (_text: any, record: Record) => (
         <RenderComplete percent={getComplete(record)} />
       ),
-      // formatter: (_t: any, _r: any, sheet: { rowId: string | number }) => {
-      //   const record = data[sheet.rowId];
-      //   return getComplete(record);
-      // },
     },
     {
       title: "中文名",
       dataIndex: "name_CN",
       width: "100px",
       ellipsis: true,
+      render: (t?: string) => <CommonRender content={t} />,
     },
     {
       title: "英文名",
       dataIndex: "name_EN",
       width: "100px",
       ellipsis: true,
+      render: (t?: string) => <CommonRender content={t} />,
     },
     {
       title: "出生",
       dataIndex: "birth",
       width: 150,
-      render: (text) => {
+      render: (text?: string) => {
         if (!text || text === "0000-00-00") {
           return "--";
         }
-        return `${text}(${getAge(text)}岁)`;
+        return `${text} (${getAge(text)}岁)`;
       },
-      sorter: (a, b) => {
-        // console.log(a.birth, b.birth);
+      sorter: (a: Record, b: Record) => {
         return getAge(a.birth) - getAge(b.birth) > 0 ? 1 : -1;
+      },
+      filters: [
+        {
+          text: "有资料",
+          value: "hasInfo",
+        },
+        {
+          text: "无资料",
+          value: "noInfo",
+        },
+      ],
+      onFilter: (value: string, record: Record) => {
+        return value === "hasInfo"
+          ? getAge(record.birth) > -1
+          : getAge(record.birth) === -1;
       },
     },
     {
@@ -150,57 +101,68 @@ function Page() {
       dataIndex: "tall",
       width: "auto",
       render: (text: any) => (text ? `${text}cm` : "--"),
+      filters: [
+        {
+          text: "有资料",
+          value: "hasInfo",
+        },
+        {
+          text: "无资料",
+          value: "noInfo",
+        },
+      ],
+      onFilter: (value: string, record: Record) => {
+        return value === "hasInfo" ? !!record?.tall : !record?.tall;
+      },
+      sorter: (a: Record, b: Record) => {
+        return (a?.tall || 0) - (b?.tall || 0) > 0 ? 1 : -1;
+      },
     },
     {
       title: "三围",
       dataIndex: "sanwei",
-      render: (_text, record) =>
+      width: 140,
+      render: (_text: undefined, record: Record) =>
         `${record.breast || "--"}/${record.waist || "--"}/${
           record.hip || "--"
-        }`,
+        }${record?.cup ? `（${record.cup}杯）` : ""}`,
     },
     {
       title: "已入库",
       dataIndex: "store",
       width: 80,
       render: getStoreCount,
-      sorter: (a, b) =>
+      sorter: (a: Record, b: Record) =>
         getStoreCount(a.store) - getStoreCount(b.store) > 0 ? 1 : -1,
     },
-    {
-      title: "想看",
-      dataIndex: "tmp_store",
-      width: 80,
-    },
+    // {
+    //   title: "想看",
+    //   dataIndex: "tmp_store",
+    //   width: 80,
+    // },
     {
       title: "操作",
       dataIndex: "operate",
       width: "auto",
       fixed: "right",
-      render: (node, record) => {
-        // console.log(node);
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(record);
-              setVisible(true);
-            }}
-          >
-            查看
-          </a>
-        );
+      render: (_node: undefined, record: Record) => {
+        return <a onClick={() => openDetail(record)}>查看</a>;
       },
     },
   ];
-  const [wrap, setWrap] = useWrap({});
+  const [wrap] = useWrap({});
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [currentRow, setCurrentRow] = useState(null);
+  const [currentRow, setCurrentRow] = useState<Record>({});
   const [searchWord, setSearchWord] = useState("");
-
   const [data, setData] = useState<any[]>([]);
 
-  const query = async () => {
+  const openDetail = (record: Record) => {
+    setCurrentRow(record);
+    setVisible(true);
+  };
+
+  const query = useCallback(async () => {
     setLoading(true);
     const records =
       (
@@ -219,16 +181,18 @@ function Page() {
     // console.log(getComplete(records[0]));
     setData(records);
     setLoading(false);
-  };
+  }, [searchWord]);
 
   useEffect(() => {
     if (!searchWord) {
       query();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchWord]);
 
   useEffect(() => {
     query();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
