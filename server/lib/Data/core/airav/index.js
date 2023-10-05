@@ -1,4 +1,4 @@
-const { createCrawler } = require("../utils/crawler");
+// const { createCrawler } = require("../utils/crawler");
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
 // const errlog = require("./errlog/index.json");
@@ -18,6 +18,7 @@ class AirAv {
     const url = `${HOST}/api/video/barcode/${outfit}?lng=zh-TW`;
     const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
+    await page.setDefaultNavigationTimeout(0);
 
     // Navigate the page to a URL
     await page.goto(url, {

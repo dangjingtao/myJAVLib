@@ -1,6 +1,7 @@
 module.exports = async ({ $, HOST, logger }) => {
   const movie = $(".movie");
   const title = $("h3").text();
+  // console.log(title);
 
   // 获取gid
   const [gid] = $("body")
