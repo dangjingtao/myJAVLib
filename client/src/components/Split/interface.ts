@@ -30,4 +30,8 @@ export interface SplitProps {
    * 内部children属性
    */
   children?: ReactNode;
+
+  onChange?: (n: number) => void;
+
+  onToggleClick?: (isMin: boolean) => void;
 }

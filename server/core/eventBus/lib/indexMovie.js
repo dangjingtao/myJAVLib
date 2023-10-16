@@ -28,7 +28,7 @@ module.exports = async function (e, params = {}) {
     initPath,
     onIndex: (item) => {
       const { status, outfit, fileDir } = item;
-      logger.info(`[${status}]${outfit || fileDir}`);
+      logger.info(`[scandir][${status}]${outfit || fileDir}`);
     },
   });
 

@@ -2,7 +2,8 @@ const fs = require("fs");
 const winston = require("winston");
 const dayjs = require("dayjs");
 
-const createLogger = async ({ filename, socket }) => {
+const createLogger = async (opts = {}) => {
+  const { filename, socket } = opts;
   const customFormat = winston.format.printf((info) => {
     const { message, timestamp, level } = info;
     const regex = /\[(.+?)\]/g;
@@ -17,16 +18,19 @@ const createLogger = async ({ filename, socket }) => {
   });
 
   const isExists = await fs.existsSync(filename);
+
+  const transports = [new winston.transports.Console()];
+  if (isExists) {
+    transports.push(new winston.transports.File({ filename }));
+  }
+
   const logger = winston.createLogger({
     format: winston.format.combine(
       winston.format.timestamp(),
       winston.format.prettyPrint(),
       customFormat
     ),
-    transports: [
-      new winston.transports.Console(),
-      new winston.transports.File({ filename }),
-    ],
+    transports,
   });
 
   // 在这里可以将日志信息发送给客户端
@@ -35,7 +39,10 @@ const createLogger = async ({ filename, socket }) => {
   });
 
   if (isExists) {
-    logger.info(`[logger]------------------------------`);
+    // transports.push(new winston.transports.File({ filename }));
+    logger.info(`-----log path----${filename}`);
+  } else {
+    logger.info(`-----log no path----`);
   }
 
   logger.err = function (info, error, ...args) {
@@ -47,6 +54,10 @@ const createLogger = async ({ filename, socket }) => {
     if (error?.stack) text += `\n${error.stack}`;
     return logger.error(text, ...args);
   };
+
+  logger.succ = function () {};
+
+  logger.warn = function () {};
 
   logger.dir = filename;
 
