@@ -73,6 +73,11 @@ const Base = () => {
     setSelectedKeys(pathArr);
   }, [location.pathname]);
 
+  useEffect(() => {
+    const t_e = new Event("my_resize");
+    window.dispatchEvent(t_e);
+  }, [isCollapsed]);
+
   const onCollapseChange = (isCollapsed: boolean) => {
     setIsCollapsed(isCollapsed);
   };

@@ -1,6 +1,9 @@
 const { createCrawler } = require("../utils/crawler");
 const parser = require("./parser");
 
+const puppeteer = require("puppeteer");
+const cheerio = require("cheerio");
+
 class Javbus {
   constructor({ PROXY, HOST, logger }) {
     this.PROXY = PROXY;
@@ -11,11 +14,17 @@ class Javbus {
   async getBaseData(outfit) {
     this.outfit = outfit;
     const { HOST, PROXY, logger } = this;
-    const $ = await createCrawler({
-      url: `${HOST}/${outfit}`,
-      proxy: PROXY,
-      outfit,
+
+    const browser = await puppeteer.launch({ headless: "new" });
+    const page = await browser.newPage();
+    await page.setDefaultNavigationTimeout(0);
+
+    await page.goto(`${HOST}/${outfit}`, {
+      waitUtil: "networkidle2",
     });
+    const body = await page.content();
+    const $ = await cheerio.load(body);
+
     const data = await parser.details({ $, HOST, logger });
     return data;
   }
@@ -25,6 +34,7 @@ class Javbus {
     const headers = { referer: HOST };
     const query = `gid=${gid}&uc=0&lang=en&floor=` + (Date.now() % 1e3);
     const url = `${HOST}/ajax/uncledatoolsbyajax.php?${query}`;
+
     const $ = await createCrawler({
       url,
       proxy: PROXY,
@@ -32,6 +42,16 @@ class Javbus {
         headers,
       },
     });
+
+    // const browser = await puppeteer.launch({ headless: "new" });
+    // const page = await browser.newPage();
+    // await page.setDefaultNavigationTimeout(0);
+
+    // await page.goto(url, {
+    //   waitUtil: "networkidle2",
+    // });
+    // const body = await page.content();
+    // const $ = await cheerio.load(body);
 
     const data = await parser.magnets($);
     return data;

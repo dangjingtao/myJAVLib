@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  Table,
+  // Table,
   Empty,
   Typography,
   Tooltip,
@@ -13,11 +13,11 @@ import {
 import { IconSearch } from "@douyinfe/semi-icons";
 import { IllustrationNoResult } from "@douyinfe/semi-illustrations";
 // import { SketchPicker, MaterialPicker } from "react-color";
-
+import { Table } from "antd";
 import EditModal from "./ components/EditModal";
-
 import type { Row } from "./types";
 import { dict, subClass } from "./constants";
+import useWrap from "@/hooks/useWrap";
 
 const { Text } = Typography;
 
@@ -118,8 +118,15 @@ function App() {
       title: "已入库",
       dataIndex: "store",
       width: 80,
-      sorter: (a: number, b: number) =>
-        a.zh_tw.length - b.zh_tw.length > 0 ? 1 : -1,
+      sorter: (a, b) => {
+        const { store: a_s } = a;
+        const { store: b_s } = b;
+        if (a_s) {
+          console.log(a_s);
+        }
+
+        // a_s = a_s || [];
+      },
       render: renderContent,
     },
     {
@@ -176,22 +183,9 @@ function App() {
     },
   ];
 
-  useEffect(() => {
-    const onResize = () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const wrapDom: Element | any = document.querySelector(
-        ".semi-layout-content"
-      );
-      const h = wrapDom?.offsetHeight;
-      const w = wrapDom?.offsetWidth;
-      setScrollProp({ y: h - 140, x: w - 40 });
-    };
-    onResize();
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
+  const [wrap] = useWrap({
+    el: document.querySelector(".semi-layout-content"),
+  });
 
   useEffect(() => {
     (async () => {
@@ -265,6 +259,7 @@ function App() {
         size="small"
         columns={columns}
         dataSource={dataSource}
+        virtual
         empty={
           <Empty
             description={<div style={{ marginBottom: 200 }}>找不到</div>}
@@ -276,13 +271,13 @@ function App() {
           />
         }
         // rowSelection={rowSelection}
-        scroll={{ y: scrollProp.y }}
+        scroll={{ y: wrap.height - 140 }}
         pagination={false}
         loading={loading}
         // virtualized
         style={{ width: "100%", margin: "0 auto" }}
         onRow={handleRow}
-        resizable
+        // resizable
       />
       <EditModal
         currentRow={currenRow}

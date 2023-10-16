@@ -1,7 +1,10 @@
-const { createCrawler } = require("../utils/crawler");
+// const { createCrawler } = require("../utils/crawler");
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
-
+// const errlog = require("./errlog/index.json");
+const chalk = require("chalk");
+const fs = require("fs");
+const path = require("path");
 class AirAv {
   constructor({ HOST, PROXY, logger }) {
     this.HOST = HOST;
@@ -15,6 +18,7 @@ class AirAv {
     const url = `${HOST}/api/video/barcode/${outfit}?lng=zh-TW`;
     const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
+    await page.setDefaultNavigationTimeout(0);
 
     // Navigate the page to a URL
     await page.goto(url, {
@@ -44,9 +48,19 @@ class AirAv {
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(0);
     // Navigate the page to a URL
-    await page.goto(url, {
-      waitUtil: "networkidle2",
-    });
+    try {
+      await page.goto(url, {
+        waitUtil: "networkidle2",
+      });
+    } catch (error) {
+      // console.log(chalk.red("遇到问题，尝试重启！"));
+      // const el = errlog;
+      // el.push({ error: error?.message });
+      // fs.writeFileSync(
+      //   path.join(__dirname, "./errlog/index.json"),
+      //   JSON.stringify(el)
+      // );
+    }
     const body = await page.content();
     const $ = await cheerio.load(body);
     try {
@@ -57,6 +71,7 @@ class AirAv {
       await browser.close();
       let arr = [];
       const { result } = data;
+
       if (Array.isArray(result)) {
         const ret = "";
         return new Promise((resolve, reject) => {
@@ -67,11 +82,14 @@ class AirAv {
             resolve("");
           }
         });
-        // for (let i = 0; i < result.length; i++) {
-        //   const info = await this.getArtistInfo(result[i].id);
-        //   // console.log("---", info);
-        //   arr.push(info);
-        // }
+      } else {
+        return new Promise((resolve, reject) => {
+          resolve(
+            Promise.all(
+              Object.entries(result).map(([key, x]) => this.getArtistInfo(x))
+            )
+          );
+        });
       }
       // console.info(`[AIRAV]抓取艺术家数据完成`);
 
@@ -91,9 +109,22 @@ class AirAv {
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(0);
     // Navigate the page to a URL
-    await page.goto(url, {
-      waitUtil: "networkidle2",
-    });
+    try {
+      await page.goto(url, {
+        waitUtil: "networkidle2",
+      });
+    } catch (error) {
+      // console.log(chalk.red("遇到问题，尝试重启！"));
+      // const el = errlog;
+      // el.push({ error: error?.message });
+      // fs.writeFileSync(
+      //   path.join(__dirname, "./errlog/index.json"),
+      //   JSON.stringify(el)
+      // );
+    }
+    // await page.goto(url, {
+    //   waitUtil: "networkidle2",
+    // });
     const body = await page.content();
     const $ = await cheerio.load(body);
     try {

@@ -36,7 +36,14 @@ const renderContent = (text: string) => {
   );
 };
 
-function App({ title, tableName, columns, EditModal: CustEditModal }) {
+function App({
+  title,
+  tableName,
+  columns,
+  EditModal: CustEditModal,
+  virtualized,
+  style,
+}) {
   const EditDetailModal = CustEditModal || EditModal;
   const [dataSource, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -107,7 +114,7 @@ function App({ title, tableName, columns, EditModal: CustEditModal }) {
         ...params,
       },
     });
-    // console.log(res);
+    console.log(res);
     setData(res.data);
     setLoading(false);
   };
@@ -136,8 +143,10 @@ function App({ title, tableName, columns, EditModal: CustEditModal }) {
       </div>
       <Table
         bordered
+        virtualized={virtualized}
         rowKey={"id"}
         size="small"
+        // style={{ width: "100%" }}
         columns={columns}
         dataSource={dataSource}
         empty={
@@ -154,7 +163,7 @@ function App({ title, tableName, columns, EditModal: CustEditModal }) {
         pagination={false}
         loading={loading}
         // virtualized
-        style={{ width: "100%", margin: "0 auto" }}
+        style={{ margin: "0 auto", ...style }}
         onRow={handleRow}
         resizable
       />

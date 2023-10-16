@@ -54,4 +54,5 @@ export const getAge = (birthday) => {
     // console.log("出生日期：" + str + "  岁数：" + age[0] + "岁");
     return age[0];
   }
+  return -1;
 };

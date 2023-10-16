@@ -42,7 +42,9 @@ class EventBus {
     await this.walkdir("./lib/", (dir) => {
       const func = require(dir);
       const arr = dir.split("/");
-      const funcName = arr[arr.length - 1].replace(".ts", "");
+      const funcName = arr[arr.length - 1]
+        .replace(".ts", "")
+        .replace(".js", "");
       methodSet.add(funcName);
       Object.defineProperty(this, funcName, {
         get() {

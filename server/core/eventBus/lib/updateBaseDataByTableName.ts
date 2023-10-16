@@ -7,8 +7,8 @@ module.exports = async function (e, { tableName, params: { id, ...rest } }) {
   const curRecord = await currentTable.findByPk(Number(id));
 
   if (curRecord) {
-    await curRecord.set({ ...rest });
-    console.log(rest, curRecord);
+    await curRecord.set({ ...rest, updatedAt: new Date() });
+
     await curRecord.save();
     return response.success("修改成功");
   } else {
