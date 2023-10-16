@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/charts": "^1.4.2",
     "@antv/s2": "^1.50.0",
     "@antv/s2-react": "^1.43.0",
     "@douyinfe/semi-ui": "^2.42.3",

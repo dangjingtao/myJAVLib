@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import OSplitPane from "./lib/SplitPane";
 import Pane from "./lib/Pane";
 import type { SplitProps } from "./interface";
@@ -39,7 +39,10 @@ export const SplitPane = (props: SplitProps) => {
         {...rest}
         minSize={min}
         maxSize={max}
-        toggleSize={toggleSize}
+        toggleSize={() => {
+          rest.onToggleClick && rest.onToggleClick(!iToggleSize);
+          toggleSize();
+        }}
         iToggleSize={iToggleSize}
         resizerStyle={resizerStyle}
       />
