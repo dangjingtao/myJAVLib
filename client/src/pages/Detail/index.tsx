@@ -16,10 +16,10 @@ import {
 } from "@douyinfe/semi-ui";
 
 import { DICT } from "./constants";
-import { fileSchemaUrl, videoSchemaUrl } from "@/lib";
+import { fileSchemaUrl, videoSchemaUrl, fileSchema2, httpSchema } from "@/lib";
 
 import Player from "@/components/Player";
-import json from "./JUFD-448.json";
+import json from "./a.json";
 
 const { Text } = Typography;
 
@@ -38,7 +38,6 @@ const Detail = () => {
     const key = <span style={{ fontSize: 16 }}>{x.name}</span>;
     if (x.code === "tags") {
       const ts = json[x.code] || [];
-      console.log(ts);
       return {
         key,
         value: (
@@ -112,6 +111,38 @@ const Detail = () => {
       };
     }
 
+    if (x.code === "video_preview") {
+      return {
+        key,
+        value: (
+          <>
+            {json.vedeo_preview ? (
+              <Text
+                link
+                underline
+                onClick={() => onOpen("http://" + json.vedeo_preview)}
+              >
+                <span style={{ fontSize: 16 }}>{json.vedeo_preview}</span>
+              </Text>
+            ) : (
+              "你还未获得该片"
+            )}
+          </>
+        ),
+      };
+    }
+
+    if (x.code === "score") {
+      return {
+        key,
+        value: (
+          <>
+            <>{json.score?.result * 2}</>分，<>{json.score?.scoreNum}</>人评价
+          </>
+        ),
+      };
+    }
+
     return {
       key: <span style={{ fontSize: 16 }}>{x.name}</span>,
       value: json[x.code]?.text,
@@ -135,26 +166,30 @@ const Detail = () => {
         </Col>
         <Col span={7}>
           <Card bodyStyle={{ paddingTop: 0 }} bordered={false}>
-            <p style={{ padding: "0 16px" }}>{json.description_CN}</p>
             <Descriptions data={data} />
           </Card>
         </Col>
       </Row>
-      <h3>样品图像</h3>
       <Row>
-        <ImagePreview>
-          {json.localPreviews.map((src: string, index: number) => {
-            return (
-              <Image
-                key={index}
-                src={fileSchemaUrl(src)}
-                width={200}
-                alt={`preview${index + 1}`}
-                style={{ marginRight: 5 }}
-              />
-            );
-          })}
-        </ImagePreview>
+        <p style={{ padding: "0 16px" }}>{json.description_CN}</p>
+      </Row>
+      <h3>样品图像</h3>
+      <Row gutter={[10, 10]}>
+        {json.localPreviews.map((src: string, index: number) => {
+          return (
+            <Col key={src} span={3} style={{ minHeight: 80 }}>
+              <ImagePreview>
+                <Image
+                  key={src}
+                  src={fileSchemaUrl(src)}
+                  width={"100%"}
+                  // height={120}
+                  alt={`preview${index + 1}`}
+                />
+              </ImagePreview>
+            </Col>
+          );
+        })}
       </Row>
       <h3>磁力链</h3>
       <Table
@@ -203,9 +238,9 @@ const Detail = () => {
         dataSource={json?.magnets}
         pagination={false}
       />
-      {json?.airav?.maybe_like_videos ? <h3>也许还喜欢</h3> : null}
+      {/* {json?.airav?.maybe_like_videos ? <h3>也许还喜欢</h3> : null}
       <Row gutter={[10, 16]}>
-        {json?.airav?.maybe_like_videos?.map((x) => {
+        {json?.maybe_like_videos?.map((x) => {
           return (
             <Col key={x.barcode} span={3}>
               <Card
@@ -224,19 +259,18 @@ const Detail = () => {
             </Col>
           );
         })}
-      </Row>
+      </Row> */}
       <div
         id="vedioModal"
         // style={{ position: "relative" }}
         className="semi-always-dark"
       >
         <Modal
-          getPopupContainer={() =>
-            document.querySelector("#vedioModal") || document.body
-          }
           title={json.title}
           footer={null}
-          fullScreen
+          // fullScreen
+          width={1400}
+          height={900}
           visible={visible}
           onOk={onClose}
           onCancel={onClose}
@@ -244,7 +278,7 @@ const Detail = () => {
         >
           <Player
             poster={fileSchemaUrl(json.localCover)}
-            src={videoSchemaUrl(json.localSoursce)}
+            src={httpSchema(json.vedeo_preview)}
           />
         </Modal>
       </div>

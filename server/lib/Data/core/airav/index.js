@@ -1,36 +1,27 @@
 // const { createCrawler } = require("../utils/crawler");
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
+const Base = require("../Base");
 
 const PREFIX = `[AIRAV]`;
-class AirAv {
+class AirAv extends Base {
   constructor({ HOST, PROXY, logger }) {
-    this.HOST = HOST;
-    this.PROXY = PROXY;
-    this.logger = logger;
+    super({ HOST, PROXY, logger });
   }
 
   async getInfoByOutfit(outfit) {
     const { PROXY, HOST, logger } = this;
-    this.outfit = outfit;
     logger.info(`${PREFIX}开始抓取${outfit}数据`);
-    const url = `${HOST}/api/video/barcode/${outfit}?lng=zh-TW`;
-    const browser = await puppeteer.launch({ headless: "new" });
-    const page = await browser.newPage();
-    await page.setDefaultNavigationTimeout(0);
 
-    // Navigate the page to a URL
-    await page.goto(url, {
-      waitUtil: "networkidle2",
-    });
-    const body = await page.content();
-    const $ = await cheerio.load(body);
+    this.outfit = outfit;
+    const url = `${HOST}/api/video/barcode/${outfit}?lng=zh-TW`;
+    const $ = await this.visit(url);
+
     try {
       const text = $("body").text().replace("The service is unavailable.", "");
       const newText = text.replace("The service is unavailable.", "");
       if (text != newText) logger.warn(`${PREFIX}${outfit}请求到非预期数据`);
       const data = JSON.parse(newText);
-      await browser.close();
       logger.info(`${PREFIX}抓取${outfit}数据完成`);
       return data?.count ? data?.result : {};
     } catch (error) {

@@ -13,7 +13,7 @@ import useLogger from "@/hooks/useLogger";
 const Index = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [gatherType, setGatherType] = useState<any>("dir");
-  const [outfit, setOutfit] = useState("JUFD-465");
+  const [outfit, setOutfit] = useState("JUFD-455");
 
   const { loggerInfo, setLoggerInfo } = useLogger({
     onUpdate: (pre, info) => {
@@ -176,8 +176,6 @@ const Index = () => {
           />
         </div>
       </SplitPane>
-
-      {/* <Divider margin="12px" /> */}
     </div>
   );
 };

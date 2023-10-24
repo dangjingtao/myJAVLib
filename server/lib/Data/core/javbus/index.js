@@ -1,31 +1,18 @@
 const { createCrawler } = require("../utils/crawler");
 const parser = require("./parser");
-const puppeteer = require("puppeteer");
-const cheerio = require("cheerio");
-
+const Base = require("../Base");
 const PREFIX = "[JAVBUS]";
 
-class Javbus {
-  constructor({ PROXY, HOST, logger }) {
-    this.PROXY = PROXY;
-    this.HOST = HOST;
-    this.logger = logger;
+class Javbus extends Base {
+  constructor({ PROXY, HOST, logger, id }) {
+    super({ PROXY, HOST, logger });
+    this.id = id || PREFIX;
   }
 
   async getBaseData(outfit) {
     this.outfit = outfit;
-    const { HOST, PROXY, logger } = this;
-
-    const browser = await puppeteer.launch({ headless: "new" });
-    const page = await browser.newPage();
-    await page.setDefaultNavigationTimeout(0);
-
-    await page.goto(`${HOST}/${outfit}`, {
-      waitUtil: "networkidle2",
-    });
-    const body = await page.content();
-    const $ = await cheerio.load(body);
-
+    const { HOST, logger } = this;
+    const $ = await this.visit(`${HOST}/${outfit}`);
     const data = await parser.details({ $, HOST, logger });
     return data;
   }

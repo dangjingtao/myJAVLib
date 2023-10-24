@@ -1,5 +1,5 @@
 // const path = require("path");
-const { PROXY, AIRAV_HSOT, JAVBUS_HOST } = require("./config");
+const { PROXY, AIRAV_HOST, JAVBUS_HOST, JAVDB_HOST } = require("./config");
 const init = require("./core/workFlow/init");
 const walkdir = require("./core/utils/walkdir");
 const getData = require("./core/workFlow/getData");
@@ -7,51 +7,18 @@ const saveData = require("./core/workFlow/saveData");
 
 process.setMaxListeners(0);
 
-// const args = {
-//   PROXY,
-//   AIRAV_HSOT,
-//   JAVBUS_HOST,
-//   outfit,
-//   dir: path.join("./assets"),
-//   useLogger: true,
-// };
-
-// const all = async () => {
-//   const r = await init(args);
-//   const res = await getData(r);
-//   const a = await saveData(res);
-//   console.log("done");
-// };
-
-// const curPath = path.join(__dirname, "./source/");
-// walkdir(curPath, []).then((fileList) => {
-//   for (let i = 0; i < fileList.length; i++) {
-//     const { outfit, stats } = fileList[i];
-//     init({
-//       PROXY,
-//       AIRAV_HSOT,
-//       JAVBUS_HOST,
-//       outfit,
-//       dir: path.join("./assets"),
-//       useLogger: true,
-//     })
-//       .then(getData)
-//       .then(saveData);
-//   }
-//   console.log("done.");
-// });
-
 class Data {
   constructor({
-    // PROXY, AIRAV_HSOT, JAVBUS_HOST,
+    // PROXY, AIRAV_HOST, JAVBUS_HOST,
     outfit,
     dir,
     socket,
     useLogger,
   }) {
     this.PROXY = PROXY;
-    this.AIRAV_HSOT = AIRAV_HSOT;
+    this.AIRAV_HOST = AIRAV_HOST;
     this.JAVBUS_HOST = JAVBUS_HOST;
+    this.JAVDB_HOST = JAVDB_HOST;
     this.outfit = outfit;
     this.dir = dir;
     this.socket = socket;
@@ -64,12 +31,21 @@ class Data {
   }
 
   async init({ ...args }) {
-    const { PROXY, AIRAV_HSOT, JAVBUS_HOST, dir, outfit, useLogger, socket } =
-      this;
+    const {
+      PROXY,
+      AIRAV_HOST,
+      JAVBUS_HOST,
+      JAVDB_HOST,
+      dir,
+      outfit,
+      useLogger,
+      socket,
+    } = this;
     this.initInfo = await init({
       PROXY,
-      AIRAV_HSOT,
+      AIRAV_HOST,
       JAVBUS_HOST,
+      JAVDB_HOST,
       dir,
       outfit,
       useLogger,
@@ -98,7 +74,6 @@ class Data {
 
   async gather(type) {
     this.gather = await this.init({});
-
     this.gather = await this.getMeta({});
     if (type === "local") {
       this.gather = await this.saveData({});

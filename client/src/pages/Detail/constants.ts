@@ -1,9 +1,10 @@
 export const DICT = [
-  // {
-  //   code: "outfit",
-  //   name: "番号",
-  // },
-  { code: "rating", name: "评分" },
+  {
+    code: "outfit",
+    name: "番号",
+  },
+  { code: "score", name: "网络评分" },
+  { code: "rating", name: "本地评分" },
   {
     code: "runtime",
     name: "时长",
@@ -36,5 +37,6 @@ export const DICT = [
     code: "actress",
     name: "女优",
   },
+  { code: "video_preview", name: "预览" },
   { code: "localSoursce", name: "观看" },
 ];

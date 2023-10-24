@@ -7,7 +7,8 @@ import {
   IconUserSetting,
   IconBookmark,
   IconUserGroup,
-  IconLive,
+  // IconLive,
+  IconMark,
   IconSetting,
   IconGridSquare,
   IconUserCardVideo,
@@ -45,17 +46,25 @@ export const routerConfigs: routerConfig[] = [
         icon: IconCustomize,
         elePath: "@/pages/SeniorSearch",
       },
+
+      {
+        path: "/gather",
+        name: "采集",
+        icon: IconDownload,
+        children: [
+          {
+            name: "番号",
+            path: "/gather/outfit",
+            elePath: "@/pages/Gather",
+            icon: IconMark,
+          },
+        ],
+      },
       {
         path: "/dataSet",
         name: "数据维护",
         icon: IconGridSquare,
         children: [
-          {
-            path: "/dataSet/gather",
-            name: "采集",
-            icon: IconDownload,
-            elePath: "@/pages/Gather",
-          },
           {
             path: "/dataSet/actress",
             name: "艺术家",
@@ -72,7 +81,6 @@ export const routerConfigs: routerConfig[] = [
             path: "/dataSet/studios",
             name: "制作商",
             elePath: "@/pages/Studios",
-            // elePath: "@/pages/Gather",
             icon: IconUserCardVideo,
           },
           {

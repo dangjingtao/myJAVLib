@@ -7,6 +7,10 @@ export const fileSchema2 = (opts: SchemaOpts) => {
   return schema + "://" + uri;
 };
 
+export const httpSchema = (uri: string) => {
+  return "http://" + uri;
+};
+
 export const fileSchemaUrl = (uri: string) => {
   return "atom://" + uri;
 };

@@ -1,12 +1,11 @@
 const fs = require("fs");
-
 const { saveImg, saveInfo } = require("../utils/save");
 const mkdir = require("../utils/mkdir");
 
 const saveData = async ({ data, dir, outfit, logger }) => {
   logger.info(`[SAVE]开始保存${outfit}数据..`);
   await mkdir(`${dir}/${outfit}`);
-  const { cover, thumb, previews = [], actress } = data;
+  const { cover, thumb, previews = [], actress = [] } = data;
   logger.info(`[SAVE]开始保存${outfit}封面..`);
   let localCover = "";
   try {
